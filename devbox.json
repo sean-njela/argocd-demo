@@ -1,0 +1,31 @@
+{
+  "$schema": "https://raw.githubusercontent.com/jetify-com/devbox/0.14.2/.schema/devbox.schema.json",
+  "packages": [
+    "python@3.12",
+    "python312Packages.flask@3.1",
+    "httpie@3.2",
+    "go-task@3.44",
+    "gitflow@1.12",
+    "kubectl@1.33",
+    "google-cloud-sdk@525.0",
+    "helmfile@1.1",
+    "k3d@5.8",
+    "tilt@0.35",
+    "yq@3.4",
+    "jq@1.8",
+    "yamllint@1.37",
+    "alsa-lib@1.2",
+    "kubernetes-helm@3.18",
+    "k9s@0.50"
+  ],
+  "shell": {
+    "init_hook": [
+      "echo 'Welcome to devbox!' > /dev/null"
+    ],
+    "scripts": {
+      "test": [
+        "echo \"Error: no test specified\" && exit 1"
+      ]
+    }
+  }
+}

@@ -1,0 +1,223 @@
+version: '3'
+
+vars:
+  MAIN_BRANCH: main
+  DEV_BRANCH: develop
+
+tasks:
+  default:
+    desc: "📋 List all tasks"
+    cmds:
+      - task --list-all
+
+  init:
+    desc: "⚙️ Initialize Git Flow with 'main' and 'develop'"
+    cmds:
+      - |
+        echo "🚀 Initializing Git Flow..."
+        
+        # Create branches if missing
+        git show-ref --quiet refs/heads/{{.MAIN_BRANCH}} || git checkout -b {{.MAIN_BRANCH}}
+        git show-ref --quiet refs/heads/{{.DEV_BRANCH}} || git checkout -b {{.DEV_BRANCH}}
+
+        # Set Git Flow config
+        git config gitflow.branch.master {{.MAIN_BRANCH}}
+        git config gitflow.branch.develop {{.DEV_BRANCH}}
+        git config gitflow.prefix.feature feature/
+        git config gitflow.prefix.bugfix bugfix/
+        git config gitflow.prefix.release release/
+        git config gitflow.prefix.hotfix hotfix/
+        git config gitflow.prefix.support support/
+        git config gitflow.prefix.versiontag ""
+
+        # Final init
+        git flow init -d
+
+        # Push branches
+        git fetch --all --prune
+        git push -u origin {{.MAIN_BRANCH}} || true
+        git push -u origin {{.DEV_BRANCH}} || true
+
+        echo "✅ Git Flow setup completed."
+    preconditions:
+      - sh: "[ -d .git ]"
+        msg: "❌ Not a Git repository. Run 'git init' first."
+      - sh: "! git config --get gitflow.branch.master >/dev/null 2>&1"
+        msg: "✅ Git Flow is already configured."
+
+  sync:
+    desc: "🔄 Sync current branch with latest 'develop'"
+    cmds:
+      - |
+        echo "🔁 Syncing..."
+        git fetch origin
+        git checkout {{.DEV_BRANCH}}
+        git pull --ff-only origin {{.DEV_BRANCH}} || (echo "❌ Cannot fast-forward develop. Resolve manually." && exit 1)
+        git checkout -
+        git merge --no-ff {{.DEV_BRANCH}} -m "Sync with develop $(date -u +%Y-%m-%dT%H:%M:%SZ)"
+        echo "✅ Synced with develop."
+
+  feature:start:
+    desc: "🚀 Start a new feature from 'develop' -> task feature:start name=login-form"
+    cmds:
+      - |
+        name=$(echo "{{.name}}" | tr '[:upper:]' '[:lower:]')
+        echo "🚧 Starting feature/$name..."
+        git checkout {{.DEV_BRANCH}}
+        git pull --ff-only origin {{.DEV_BRANCH}} || (echo "❌ Cannot fast-forward develop. Resolve manually." && exit 1)
+        git flow feature start "$name"
+    requires:
+      vars:
+        - name
+
+  feature:push:
+    desc: "🚀 Push current feature to origin"
+    cmds:
+      - git push --set-upstream origin $(git rev-parse --abbrev-ref HEAD)
+
+  feature:clean:
+    desc: "🧹 Delete the current local feature branch after PR merge"
+    cmds:
+      - |
+        CURRENT_BRANCH=$(git rev-parse --abbrev-ref HEAD)
+        if [[ "$CURRENT_BRANCH" != feature/* ]]; then
+          echo "❌ Not on a feature branch. Aborting."
+          exit 1
+        fi
+        echo "Cleaning up feature branch: $CURRENT_BRANCH"
+        git checkout develop
+        git pull origin develop
+        git branch -D "$CURRENT_BRANCH" || echo "⚠️  Branch '$CURRENT_BRANCH' could not be deleted."
+        git fetch origin --prune
+
+  release:start:
+    desc: "🚀 Start a new release from develop -> task release:start version=1.2.0"
+    cmds:
+      - |
+        version=$(echo "{{.version}}" | tr '[:upper:]' '[:lower:]')
+        git checkout {{.DEV_BRANCH}}
+        git pull --ff-only origin {{.DEV_BRANCH}} || (echo "❌ Develop has diverged. Resolve manually." && exit 1)
+        git flow release start "$version"
+    requires:
+      vars:
+        - version
+
+  release:verify:
+    desc: "✅ Verifies that 'main' and 'develop' are clean and fast-forwardable -> task release:verify version=1.2.3"
+    cmds:
+      - |
+        version=$(echo "{{.version}}" | tr '[:upper:]' '[:lower:]')
+
+        echo "🔍 Checking for preconditions before release:finish..."
+        git fetch origin
+
+        git checkout main
+        if ! git merge-base --is-ancestor main origin/main; then
+          echo "❌ Your local main is behind origin/main. Run: git pull origin main"
+          exit 1
+        fi
+
+        git checkout develop
+        if ! git merge-base --is-ancestor develop origin/develop; then
+          echo "❌ Your local develop is behind origin/develop. Run: git pull origin develop"
+          exit 1
+        fi
+
+        echo "✅ 'main' and 'develop' are safe for release:finish"
+    requires:
+      vars:
+        - version
+
+  release:repair:
+    desc: "🛠️ Repairs a broken release:finish (after a failed conflict) -> task release:repair version=1.2.3"
+    cmds:
+      - |
+        version=$(echo "{{.version}}" | tr '[:upper:]' '[:lower:]')
+        echo "🛠 Repairing release/$version..."
+
+        echo "➡️  Step 1: Checkout main and resolve any conflicts manually."
+        git checkout main
+
+        git status
+
+        echo ""
+        echo "⚠️  If you see 'Unmerged paths' in Taskfile.yml or others:"
+        echo "   1. Open the file: nano Taskfile.yml"
+        echo "   2. Fix the conflict"
+        echo "   3. Run: git add Taskfile.yml"
+        echo "   4. Run: git commit -m 'Resolve release conflict'"
+        echo ""
+
+        echo "➡️  Step 2: Back-merge main into develop"
+        git checkout develop
+        git pull origin develop
+        git merge main -m "Merge main after release $version"
+
+        echo "➡️  Step 3: Push branches and tags"
+        git push origin main
+        git push origin develop
+        git push --tags
+
+        echo "✅ Recovered and pushed release $version"
+    requires:
+      vars:
+        - version
+
+  release:finish:
+    desc: "🏁 Finishes and publishes a release (merges, tags, pushes). -> task release:finish version=1.2.0"
+    deps:
+      - task: release:verify
+        vars: { version: "{{.version}}" }
+    cmds:
+      - |
+        version=$(echo "{{.version}}" | tr '[:upper:]' '[:lower:]')
+        echo "🏁 Finishing release $version..."
+        git checkout {{.MAIN_BRANCH}}
+        git pull origin {{.MAIN_BRANCH}} || (echo "❌ Pull failed. Resolve diverged main." && exit 1)
+        git checkout {{.DEV_BRANCH}}
+        git pull origin {{.DEV_BRANCH}} || (echo "❌ Pull failed. Resolve diverged develop." && exit 1)
+        git flow release finish -m "Release $version" "$version"
+        git push origin {{.MAIN_BRANCH}}
+        git push origin {{.DEV_BRANCH}}
+        git push --tags
+    requires:
+      vars:
+        - version
+
+
+  hotfix:start:
+    desc: "🔥 Start a hotfix from main -> task hotfix:start version=1.2.1"
+    cmds:
+      - |
+        version=$(echo "{{.version}}" | tr '[:upper:]' '[:lower:]')
+        git checkout {{.MAIN_BRANCH}}
+        git pull origin {{.MAIN_BRANCH}} || (echo "❌ Pull failed. Resolve diverged main." && exit 1)
+        git flow hotfix start "$version"
+    requires:
+      vars:
+        - version
+
+  hotfix:finish:
+    desc: "🏁 Finish hotfix, tag and merge -> task hotfix:finish version=1.2.1"
+    cmds:
+      - |
+        version=$(echo "{{.version}}" | tr '[:upper:]' '[:lower:]')
+        echo "🏁 Finishing hotfix v$version..."
+        git flow hotfix finish -m "Hotfix v$version" "$version"
+        git push origin {{.MAIN_BRANCH}}
+        git push origin {{.DEV_BRANCH}}
+        git push --tags
+    requires:
+      vars:
+        - version
+
+  clean:branches:
+    desc: "🧼 Delete all local feature, release, hotfix branches (after merge)"
+    cmds:
+      - |
+        echo "🧹 Cleaning up local branches..."
+        for b in $(git branch | grep -E 'feature/|release/|hotfix/' | sed 's/\*//'); do
+          git branch -d $b || echo "⚠️ Could not delete $b (maybe not merged?)"
+        done
+
+
