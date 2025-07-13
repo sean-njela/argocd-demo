@@ -3,19 +3,19 @@ kind: Deployment
 metadata:
   creationTimestamp: null
   labels:
-    app: myArgoApp
-  name: myArgoApp
+    app: my-argocd-app
+  name: my-argocd-app
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: myArgoApp
+      app: my-argocd-app
   strategy: {}
   template:
     metadata:
       creationTimestamp: null
       labels:
-        app: myArgoApp
+        app: my-argocd-app
     spec:
       containers:
         - image: nanajanashia/argocd-app:1.0
