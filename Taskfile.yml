@@ -1,0 +1,29 @@
+version: '3'
+tasks:
+  default:
+    desc: "Default command"
+    cmds:
+      - task --list-all
+
+  ports:
+    desc: "This is a command list ports in use"
+    cmds:
+      - ss -tunl
+
+  create-cluster:
+    desc: "This is a command to create a local kind cluster"
+    cmds:
+      - kind create cluster -n argocd-demo --image kindest/node:v1.33.1
+
+  expose-kubeconfig:
+    desc: "Expose cluster kubeconfig"
+    cmds:
+      - cat ~/.kube/config > config-kind-dev.txt
+      - echo "Copy config-kind-dev.txt into lens to view your cluster"
+
+  install-argocd:
+    desc: "This is a command to install argocd"
+    cmds:
+      - kubectl create namespace argocd
+      - kubectl apply -n argocd -f https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml
+      - kubectl port-forward svc/argocd-server -n argocd 8080:443

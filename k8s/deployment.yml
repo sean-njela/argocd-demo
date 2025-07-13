@@ -1,0 +1,26 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  creationTimestamp: null
+  labels:
+    app: myArgoApp
+  name: myArgoApp
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: myArgoApp
+  strategy: {}
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: myArgoApp
+    spec:
+      containers:
+      - image: nanajanashia/argocd-app:1.0
+        ports:
+        - containerport: 8080
+        name: argocd-app
+        resources: {}
+status: {}

@@ -16,7 +16,10 @@
     "yamllint@1.37",
     "alsa-lib@1.2",
     "kubernetes-helm@3.18",
-    "k9s@0.50"
+    "k9s@0.50",
+    "kind@0.29",
+    "kubectx@0.9",
+    "argocd@latest"
   ],
   "shell": {
     "init_hook": [
