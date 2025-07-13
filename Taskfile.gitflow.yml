@@ -11,7 +11,7 @@ tasks:
       - task --list-all
 
   commit:
-    desc: "Commit changes"
+    desc: "Add and commit changes -> task commit message=\"your commit message\""
     cmds:
       - |
         git status
