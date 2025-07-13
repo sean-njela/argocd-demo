@@ -8,7 +8,7 @@ spec:
   project: demo #project to deploy to
   source:
     repoURL: https://github.com/sean-njela/argocd-demo.git
-    targetRevision: HEAD
+    targetRevision: main #branch to deploy from (or HEAD for latest commit)
     path: k8s #path to the k8s folder
   destination:
     server: https://kubernetes.default.svc #kubernetes server
