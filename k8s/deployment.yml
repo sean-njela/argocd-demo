@@ -24,3 +24,5 @@ spec:
           name: argocd-app
           resources: {}
 status: {}
+
+
