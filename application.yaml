@@ -5,7 +5,7 @@ metadata:
   namespace: argocd #namespace of the app
 
 spec:
-  project: demo #project to deploy to
+  project: default #project to deploy to
   source:
     repoURL: https://github.com/sean-njela/argocd-demo.git
     targetRevision: main #branch to deploy from (or HEAD for latest commit)
