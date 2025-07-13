@@ -10,6 +10,18 @@ tasks:
     cmds:
       - task --list-all
 
+  commit:
+    desc: "Commit changes"
+    cmds:
+      - |
+        git status
+        git add .
+        git commit -m "{{.message}}"
+        git status
+    requires:
+      vars:
+        - message
+
   init:
     desc: "⚙️ Initialize Git Flow with 'main' and 'develop'"
     cmds:
