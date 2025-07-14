@@ -2,7 +2,7 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: my-argocd-app # name of the app
+  name: my-argocd-app1 # name of the app
   namespace: argocd # namespace of the app
   finalizers:
     - resources-finalizer.argocd.argoproj.io/foreground # this will make argocd delete the resources when the app is deleted

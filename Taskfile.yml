@@ -48,3 +48,9 @@ tasks:
     cmds:
       - kubens argocd
       - argocd admin initial-password
+
+  bootstrap-app0:
+    desc: "Bootstrap argocd application using app0"
+    cmds:
+      - kubens argocd
+      - kubectl apply -f 0-application.yaml
