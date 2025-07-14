@@ -11,16 +11,16 @@ tasks:
       - task --list-all
 
   commit:
-    desc: "Add and commit changes -> task commit message=\"your commit message\""
+    desc: "Add and commit changes -> task commit msg=\"your commit message\""
     cmds:
       - |
         git status
         git add .
-        git commit -m "{{.message}}"
+        git commit -m "{{.msg}}"
         git status
     requires:
       vars:
-        - message
+        - msg
 
   init:
     desc: "⚙️ Initialize Git Flow with 'main' and 'develop'"

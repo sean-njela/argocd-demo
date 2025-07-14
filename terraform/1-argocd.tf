@@ -1,4 +1,8 @@
-# Here we will install argocd using helm
+# We could have just added argocd using kubectl apply -f https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml
+# Or we could have used direct helm install -> helm repo add argocd https://argoproj.github.io/argo-helm
+# Then helm repo update
+# Then helm install argocd -n argocd --create-namespace argocd/argo-cd --version 3.35.4
+# But here we will install argocd using helm in tf 
 # It makes it easier to manage the variables and dependencies
 resource "helm_release" "argocd" {
     name = "argocd"
