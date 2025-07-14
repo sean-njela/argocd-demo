@@ -2,7 +2,7 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: my-argocd-app # name of the app
+  name: my-argocd-app0  # name of the app
   namespace: argocd # namespace of the app
   finalizers:
     - resources-finalizer.argocd.argoproj.io/foreground # this will make argocd delete the resources when the app is deleted
@@ -16,6 +16,9 @@ spec:
   destination:
     server: https://kubernetes.default.svc # kubernetes server
     namespace: argocd-demo-ns0 # namespace to deploy to | defined in the helm chart
+    helm:
+      valueFiles:
+        - values.yaml
   syncPolicy:
     syncOptions:
       - CreateNamespace=true # create namespace if it does not exist
