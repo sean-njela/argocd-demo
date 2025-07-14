@@ -48,6 +48,38 @@ bld/
 # Visual Studio 2017 auto generated files
 Generated\ Files/
 
+# --- Project-specific ignores ---
+
+# MkDocs
+site/*
+
+
+# Devbox
+.devbox/
+
+# Poetry
+.venv/
+
+# Kind Kubeconfig
+config-kind-dev.txt
+
+# Python bytecode
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Distribution / packaging
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+
+
 # MSTest test Results
 [Tt]est[Rr]esult*/
 [Bb]uild[Ll]og.*

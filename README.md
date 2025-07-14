@@ -4,9 +4,9 @@
   <h1>Argo CD Personal Project</h1>
   
   <p>
-    This is a personal project to showcase my Argo CD knowledge. I am using this project to learn Argo CD and to build applications that I can use to test Argo CD. I will keep adding more applications to this project as I learn more about Argo CD.
+    A professional portfolio project showcasing GitOps implementation with Argo CD, Kubernetes, and Infrastructure as Code. This project demonstrates DevOps best practices using modern tools and techniques.
 
-    Terraform installs Argo CD into the Kind cluster. We use helm to add the argocd helm repo, which we will use to install the image updater chart.
+    The project uses Terraform to provision Argo CD into a Kind cluster, implements the App of Apps pattern, and leverages Helm charts for application deployment.
   </p>
   
 <p>
@@ -160,17 +160,37 @@ The `environments/dev/k8s` directory contains the Kubernetes manifests for the s
 
 
 ## Roadmap
-* [x] ArgoCD
-* [x] Terraform
-* [x] Helm 
+* [x] ArgoCD implementation
+* [x] Terraform infrastructure as code
+* [x] Helm chart integration
 * [x] App of apps pattern
-* [ ] Image updater
-* [ ] Deployment freezing   
-* [ ] 
+* [x] Comprehensive documentation
+* [ ] ArgoCD Image Updater
+* [ ] Deployment freezing
+* [ ] Notification system
 
 ## NOTES
 - The `1-application.yaml` file is the same as the `0-application.yaml` it is the file we used initially before we added the app of apps pattern, tf and helm
 - We number the files because we will be adding more and more files in the future
+
+## Documentation
+
+Comprehensive documentation is available in the `docs/` directory. You can view it locally by running:
+
+```bash
+mkdocs serve # make sure you are in the poetry environment (check prerequisites)
+```
+
+Then navigate to [http://127.0.0.1:8000/argocd-demo/](http://127.0.0.1:8000/argocd-demo/)
+
+The documentation covers:
+- Project architecture
+- ArgoCD implementation details
+- Application deployment process
+- Environment management
+- Terraform infrastructure
+- Helm chart structure
+- Automation with Task runner
 
 ## Contributors
 

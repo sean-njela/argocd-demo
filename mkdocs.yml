@@ -1,58 +1,103 @@
-site_name: My ArgoCD Project Documentation
+site_name: ArgoCD DevOps Portfolio | Sean Njela
+site_description: Professional ArgoCD implementation showcasing GitOps, Infrastructure as Code, and Kubernetes expertise
 site_url: https://sean-njela.github.io/argocd-demo
+site_author: Sean Njela
 repo_url: https://github.com/sean-njela/argocd-demo
-repo_name: sean-njela/argocd-demo  # appears in tooltip
+repo_name: sean-njela/argocd-demo
 edit_uri: edit/main/docs/
+copyright: Copyright &copy; 2024 Sean Njela - Personal Portfolio Project
 
 theme:
   name: material
   language: en
+  favicon: assets/images/argocd.png
+  logo: assets/images/argocd.png
   features:
-    - navigation.tabs
     - navigation.sections
     - navigation.top
+    - navigation.expand
+    - navigation.path
+    - navigation.indexes
     - toc.integrate
+    - toc.follow
     - content.code.copy
+    - content.code.annotate
     - content.action.edit
+    - content.action.view
     - search.suggest
     - search.highlight
+    - search.share
   palette:
-    - scheme: slate  # Default to dark mode
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: blue
+      accent: light blue
       toggle:
         icon: material/weather-sunny
         name: Switch to light mode
-    - scheme: default
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: blue
+      accent: light blue
       toggle:
         icon: material/weather-night
         name: Switch to dark mode
 
 nav:
-  - Home: index.md
+  - Home: 
+      - index.md
+      - Disclaimer: disclaimer.md
+  - Quick Start:
+      - Getting Started: quickstart/getting-started.md
+      - Prerequisites: quickstart/prerequisites.md
+      - Installation: quickstart/installation.md
   - Architecture:
-      - Overview: architecture/overview.md
-      - Decision Log: architecture/decision-log.md
-      - Services: architecture/services.md
-  - How-To Guides:
-      - Add a Feature: how-to/add-feature.md
-  - CLI:
-      - Manage Commands: cli/manage-commands.md
-  - Reference:
-      - Internal API: reference/internal-api.md
+      - System Overview: architecture/overview.md
+  - Infrastructure:
+      - Terraform Configuration: infrastructure/terraform.md
+  - GitOps & ArgoCD:
+      - ArgoCD Overview: argocd/overview.md
+      - Application Deployment: argocd/applications.md
+      - Environment Management: argocd/environments.md
+  - Helm Charts:
+      - Chart Structure: helm/structure.md
+  - Automation:
+      - Task Runner: automation/taskfile.md
+extra:
+  social:
+    - icon: fontawesome/brands/github
+      link: https://github.com/sean-njela
+    - icon: fontawesome/brands/linkedin
+      link: https://linkedin.com/in/sean-njela
+  generator: false
 
 plugins:
-  - search
-  - mkdocstrings:
-      default_handler: python
+  - search:
+      lang: en
   - mermaid2
 
 markdown_extensions:
   - admonition
+  - pymdownx.details
+  - pymdownx.superfences
+  - pymdownx.tabbed:
+      alternate_style: true
+  - pymdownx.highlight:
+      anchor_linenums: true
+      line_spans: __span
+      pygments_lang_class: true
+  - pymdownx.inlinehilite
+  - pymdownx.snippets
+  - attr_list
+  - md_in_html
+  - tables
   - toc:
       permalink: true
-  - pymdownx.superfences
-  - pymdownx.tabbed
-  - pymdownx.highlight
-  - pymdownx.emoji
-  - pymdownx.tasklist
-  - pymdownx.details
-  - pymdownx.snippets
+      toc_depth: 3
+  - pymdownx.keys
+  - pymdownx.mark
+  - pymdownx.smartsymbols
+  - pymdownx.tasklist:
+      custom_checkbox: true
+  - def_list
+  - footnotes
