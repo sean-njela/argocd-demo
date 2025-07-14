@@ -6,6 +6,7 @@
   <p>
     This is a personal project to showcase my Argo CD knowledge. I am using this project to learn Argo CD and to build applications that I can use to test Argo CD. I will keep adding more applications to this project as I learn more about Argo CD.
 
+    Terraform installs Argo CD into the Kind cluster. We use helm to add the argocd helm repo, which we will use to install the image updater chart.
   </p>
   
 <p>
@@ -60,7 +61,6 @@
 ![Taskfile](https://img.shields.io/badge/Taskfile-3.44.0-green)
 ![gitflow](https://img.shields.io/badge/gitflow-1.12-green)
 ![kubectl](https://img.shields.io/badge/kubectl-1.33-green)
-![tilt](https://img.shields.io/badge/tilt-0.35-green)
 ![yq](https://img.shields.io/badge/yq-3.4-green)
 ![jq](https://img.shields.io/badge/jq-1.8-green)
 ![yamllint](https://img.shields.io/badge/yamllint-1.37-green)
@@ -81,6 +81,11 @@
 This project uses [Devbox](https://www.jetify.com/devbox/) to manage the development environment. Devbox provides a consistent, isolated environment with all the necessary tools pre-installed.
 
 ### Required Tools
+
+0. **install Docker**
+   - Follow the [installation instructions](https://docs.docker.com/get-docker/) for your operating system
+
+> The rest of the tools are installed using devbox
 
 1. **Install Devbox**
    - Follow the [installation instructions](https://www.jetify.com/devbox/docs/installing_devbox/) for your operating system

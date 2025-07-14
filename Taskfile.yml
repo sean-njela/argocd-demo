@@ -60,3 +60,13 @@ tasks:
     dir: terraform
     cmds:
       - terraform destroy -auto-approve
+
+
+# -------------- Image Updater -------------- 07/14/2025 ---------------- #
+
+  helm-add-argocd: # we need this to access the image updater chart
+    desc: "Add argocd repo (image updater chart lives here)"
+    cmds:
+      - kubens argocd
+      - helm repo add argocd https://argoproj.github.io/argo-helm
+      - helm repo update
