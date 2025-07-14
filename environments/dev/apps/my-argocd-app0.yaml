@@ -5,7 +5,7 @@ metadata:
   name: my-argocd-app # name of the app
   namespace: argocd # namespace of the app
   finalizers:
-    - resources-finalizer.argocd.argoproj.io # this will make argocd delete the resources when the app is deleted
+    - resources-finalizer.argocd.argoproj.io/foreground # this will make argocd delete the resources when the app is deleted
 
 spec:
   project: default # project to deploy to
