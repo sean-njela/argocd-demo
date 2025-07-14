@@ -47,6 +47,7 @@
 ## Screenshots
 
 <div align="center"> 
+  <img src="assets/screenshot2.png" alt="argocd_image_updater"/>
   <img src="assets/argocd_apps_page.webp" alt="argocd_apps_page"/>
 </div>
 

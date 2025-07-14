@@ -15,7 +15,7 @@ tasks:
     cmds:
       - kind create cluster -n argocd-demo --image kindest/node:v1.33.1
     status:
-      - kind get clusters | grep -q argocd-demo
+      - kind get clusters | grep argocd-demo
 
   expose-kubeconfig:
     desc: "Expose cluster kubeconfig"
@@ -42,8 +42,6 @@ tasks:
     desc: "Deletes any existing Argo CD installation from the cluster"
     cmds:
       - kubectl delete -n argocd -f https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml --ignore-not-found=true
-      - kubectl delete -n argocd -f 0-application.yaml --ignore-not-found=true
-      - kubectl delete -n argocd -f 1-application.yaml --ignore-not-found=true
   
   argocd-init-passwd:
     desc: "This is a command to initialize argocd password. Use admin as username"
