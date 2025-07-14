@@ -200,26 +200,68 @@ tasks:
 
   hotfix:start:
     desc: "🔥 Start a hotfix from main -> task hotfix:start version=1.2.1"
+    preconditions:
+      # Check if we're on a clean branch
+      - sh: git diff --quiet && git diff --staged --quiet
+        msg: "❌ You have uncommitted changes. Please commit or stash them first."
+      # Check if develop branch is in sync with remote
+      - sh: 'git fetch origin {{.DEV_BRANCH}} && [ "$(git rev-parse {{.DEV_BRANCH}})" = "$(git rev-parse origin/{{.DEV_BRANCH}})" ] || [ ! -z "$(git branch --list {{.DEV_BRANCH}})" ]'
+        msg: "❌ Your local '{{.DEV_BRANCH}}' branch has diverged from 'origin/{{.DEV_BRANCH}}'. Please sync it first with 'task sync'."
+      # Check if main branch is in sync with remote
+      - sh: 'git fetch origin {{.MAIN_BRANCH}} && [ "$(git rev-parse {{.MAIN_BRANCH}})" = "$(git rev-parse origin/{{.MAIN_BRANCH}})" ] || [ ! -z "$(git branch --list {{.MAIN_BRANCH}})" ]'
+        msg: "❌ Your local '{{.MAIN_BRANCH}}' branch has diverged from 'origin/{{.MAIN_BRANCH}}'. Please fix this first."
+      # Check if hotfix branch already exists
+      - sh: '[ -z "$(git branch --list hotfix/{{.version}})" ]'
+        msg: "❌ Hotfix branch 'hotfix/{{.version}}' already exists. Please use a different version."
     cmds:
       - |
         version=$(echo "{{.version}}" | tr '[:upper:]' '[:lower:]')
+        echo "🔥 Starting hotfix v$version from {{.MAIN_BRANCH}}..."
         git checkout {{.MAIN_BRANCH}}
         git pull origin {{.MAIN_BRANCH}} || (echo "❌ Pull failed. Resolve diverged main." && exit 1)
-        git flow hotfix start "$version"
+        git flow hotfix start "$version" || (echo "❌ Failed to start hotfix. See error above." && exit 1)
+        echo "✅ Hotfix branch 'hotfix/$version' created. Make your changes and then run 'task hotfix:finish version=$version'."
     requires:
       vars:
         - version
 
   hotfix:finish:
     desc: "🏁 Finish hotfix, tag and merge -> task hotfix:finish version=1.2.1"
+    preconditions:
+      # Check if we're on the correct hotfix branch
+      - sh: 'git rev-parse --abbrev-ref HEAD | grep -q "^hotfix/{{.version}}$"'
+        msg: "❌ You must be on the 'hotfix/{{.version}}' branch to finish it. Current branch: $(git rev-parse --abbrev-ref HEAD)"
+      # Check if the branch is clean
+      - sh: git diff --quiet && git diff --staged --quiet
+        msg: "❌ You have uncommitted changes. Please commit them first."
+      # Check if both target branches exist and are up-to-date
+      - sh: 'git fetch origin && git branch -a | grep -q "remotes/origin/{{.MAIN_BRANCH}}"'
+        msg: "❌ Remote '{{.MAIN_BRANCH}}' branch not found. Please check your repository setup."
+      - sh: 'git fetch origin && git branch -a | grep -q "remotes/origin/{{.DEV_BRANCH}}"'
+        msg: "❌ Remote '{{.DEV_BRANCH}}' branch not found. Please check your repository setup."
     cmds:
       - |
         version=$(echo "{{.version}}" | tr '[:upper:]' '[:lower:]')
         echo "🏁 Finishing hotfix v$version..."
-        git flow hotfix finish -m "Hotfix v$version" "$version"
-        git push origin {{.MAIN_BRANCH}}
-        git push origin {{.DEV_BRANCH}}
-        git push --tags
+        
+        # Fetch latest from remote to ensure we're up-to-date
+        git fetch origin
+        
+        # Finish the hotfix with proper error handling
+        git flow hotfix finish -m "Hotfix v$version" "$version" || {
+          echo "❌ Failed to finish hotfix. Resolving conflicts may be required."
+          echo "👉 If there are conflicts, resolve them and then run:"
+          echo "   git flow hotfix finish '$version'"
+          exit 1
+        }
+        
+        # Push changes to remote branches and tags
+        echo "🚀 Pushing changes to remote..."
+        git push origin {{.MAIN_BRANCH}} || (echo "❌ Failed to push to {{.MAIN_BRANCH}}. Please push manually." && exit 1)
+        git push origin {{.DEV_BRANCH}} || (echo "❌ Failed to push to {{.DEV_BRANCH}}. Please push manually." && exit 1)
+        git push --tags || (echo "❌ Failed to push tags. Please push manually." && exit 1)
+        
+        echo "✅ Hotfix v$version completed successfully!"
     requires:
       vars:
         - version
