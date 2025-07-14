@@ -96,9 +96,11 @@ This project uses [Devbox](https://www.jetify.com/devbox/) to manage the develop
    cd argocd-demo
    ```
 
-3. **Start the Devbox Environment**
+3. **Start the Devbox Environment and poetry environment**
    ```bash
    devbox shell # Start the devbox environment
+   poetry install # Install dependencies
+   poetry env activate # use the output to activate the poetry environment
    ```
 > Note - The first time you run `devbox shell`, it will take a few minutes to install the necessary tools. But after that it will be much faster.
 
