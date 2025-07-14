@@ -101,6 +101,7 @@ This project uses [Devbox](https://www.jetify.com/devbox/) to manage the develop
    devbox shell # Start the devbox environment
    poetry install # Install dependencies
    poetry env activate # use the output to activate the poetry environment
+   mkdocs serve # Start the mkdocs server http://127.0.0.1:8000/argocd-demo/
    ```
 > Note - The first time you run `devbox shell`, it will take a few minutes to install the necessary tools. But after that it will be much faster.
 

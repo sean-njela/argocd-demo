@@ -1,0 +1,58 @@
+site_name: My ArgoCD Project Documentation
+site_url: https://sean-njela.github.io/argocd-demo
+repo_url: https://github.com/sean-njela/argocd-demo
+repo_name: sean-njela/argocd-demo  # appears in tooltip
+edit_uri: edit/main/docs/
+
+theme:
+  name: material
+  language: en
+  features:
+    - navigation.tabs
+    - navigation.sections
+    - navigation.top
+    - toc.integrate
+    - content.code.copy
+    - content.action.edit
+    - search.suggest
+    - search.highlight
+  palette:
+    - scheme: slate  # Default to dark mode
+      toggle:
+        icon: material/weather-sunny
+        name: Switch to light mode
+    - scheme: default
+      toggle:
+        icon: material/weather-night
+        name: Switch to dark mode
+
+nav:
+  - Home: index.md
+  - Architecture:
+      - Overview: architecture/overview.md
+      - Decision Log: architecture/decision-log.md
+      - Services: architecture/services.md
+  - How-To Guides:
+      - Add a Feature: how-to/add-feature.md
+  - CLI:
+      - Manage Commands: cli/manage-commands.md
+  - Reference:
+      - Internal API: reference/internal-api.md
+
+plugins:
+  - search
+  - mkdocstrings:
+      default_handler: python
+  - mermaid2
+
+markdown_extensions:
+  - admonition
+  - toc:
+      permalink: true
+  - pymdownx.superfences
+  - pymdownx.tabbed
+  - pymdownx.highlight
+  - pymdownx.emoji
+  - pymdownx.tasklist
+  - pymdownx.details
+  - pymdownx.snippets
