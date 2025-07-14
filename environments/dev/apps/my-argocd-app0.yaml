@@ -15,7 +15,7 @@ spec:
     path: environments/dev/helm/myargoapp-chart # path to the helm chart (app0)
   destination:
     server: https://kubernetes.default.svc # kubernetes server
-    # no namespace specified for app of apps pattern
+    namespace: argocd-demo-ns0 # namespace to deploy to | defined in the helm chart
   syncPolicy:
     syncOptions:
       - CreateNamespace=true # create namespace if it does not exist

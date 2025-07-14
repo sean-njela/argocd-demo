@@ -15,7 +15,7 @@ spec:
     path: environments/dev/k8s # path to the k8s folder (app1)
   destination:
     server: https://kubernetes.default.svc # kubernetes server
-    # no namespace specified for app of apps pattern
+    namespace: argocd-demo-ns1 # namespace to deploy to | defined in the k8s folder
   syncPolicy:
     syncOptions:
       - CreateNamespace=true # create namespace if it does not exist

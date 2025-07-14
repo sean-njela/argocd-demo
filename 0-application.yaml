@@ -14,7 +14,7 @@ spec:
     path: environments/dev/apps # path to the apps folder (app of apps pattern)
   destination:
     server: https://kubernetes.default.svc # kubernetes server
-    # no namespace specified for app of apps pattern
+    # no namespace specified for root app in app of apps pattern
   syncPolicy:
     syncOptions:
       - CreateNamespace=true # create namespace if it does not exist
