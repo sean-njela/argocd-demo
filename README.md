@@ -163,7 +163,6 @@ The `environments/dev/k8s` directory contains the Kubernetes manifests for the s
 - The `1-application.yaml` file is the same as the `0-application.yaml` it is the file we used initially before we added the app of apps pattern, tf and helm
 - We number the files because we will be adding more and more files in the future
 
-
 ## Contributors
 
 <a href="https://github.com/sean-njela/argocd-demo/graphs/contributors">
