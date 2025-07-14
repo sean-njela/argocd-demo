@@ -1,0 +1,5 @@
+apiVersion: v2
+name: my-argocd-app
+description: A basic nginx Helm chart for my ArgoCD app
+version: 0.1.0
+appVersion: "1.21.6"

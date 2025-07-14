@@ -11,9 +11,11 @@ tasks:
       - ss -tunl
 
   create-cluster:
-    desc: "This is a command to create a local kind cluster"
+    desc: "Create a Kind cluster if it doesn't already exist"
     cmds:
       - kind create cluster -n argocd-demo --image kindest/node:v1.33.1
+    status:
+      - kind get clusters | grep -q argocd-demo
 
   expose-kubeconfig:
     desc: "Expose cluster kubeconfig"
@@ -22,8 +24,27 @@ tasks:
       - echo "Copy config-kind-dev.txt into lens to view your cluster"
 
   install-argocd:
-    desc: "This is a command to install argocd"
+    desc: "Install or update Argo CD using Terraform"
+    dir: terraform
+    deps:
+      - create-cluster
+      - clean-argocd
     cmds:
-      - kubectl create namespace argocd
-      - kubectl apply -n argocd -f https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml
+      - terraform init
+      - terraform apply -auto-approve
+
+  forward-argocd-ui:
+    desc: "Forward the Argo CD server UI to localhost:8080"
+    cmds:
       - kubectl port-forward svc/argocd-server -n argocd 8080:443
+
+  clean-argocd:
+    desc: "Deletes any existing Argo CD installation from the cluster"
+    cmds:
+      - kubectl delete -n argocd -f https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml --ignore-not-found=true
+
+  argocd-init-passwd:
+    desc: "This is a command to initialize argocd password. Use admin as username"
+    cmds:
+      - kubens argocd
+      - argocd admin initial-password

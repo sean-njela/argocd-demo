@@ -24,6 +24,11 @@ tasks:
 
   init:
     desc: "⚙️ Initialize Git Flow with 'main' and 'develop'"
+    preconditions:
+      - sh: "[ -d .git ]"
+        msg: "❌ Not a Git repository. Run 'git init' first."
+      - sh: "! git config --get gitflow.branch.master >/dev/null 2>&1"
+        msg: "✅ Git Flow is already configured."
     cmds:
       - |
         echo "🚀 Initializing Git Flow..."
@@ -51,11 +56,7 @@ tasks:
         git push -u origin {{.DEV_BRANCH}} || true
 
         echo "✅ Git Flow setup completed."
-    preconditions:
-      - sh: "[ -d .git ]"
-        msg: "❌ Not a Git repository. Run 'git init' first."
-      - sh: "! git config --get gitflow.branch.master >/dev/null 2>&1"
-        msg: "✅ Git Flow is already configured."
+
 
   sync:
     desc: "🔄 Sync current branch with latest 'develop'"

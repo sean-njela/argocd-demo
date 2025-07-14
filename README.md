@@ -59,20 +59,20 @@
 ![Taskfile](https://img.shields.io/badge/Taskfile-3.44.0-green)
 ![gitflow](https://img.shields.io/badge/gitflow-1.12-green)
 ![kubectl](https://img.shields.io/badge/kubectl-1.33-green)
-![helmfile](https://img.shields.io/badge/helmfile-1.1-green)
 ![tilt](https://img.shields.io/badge/tilt-0.35-green)
 ![yq](https://img.shields.io/badge/yq-3.4-green)
 ![jq](https://img.shields.io/badge/jq-1.8-green)
 ![yamllint](https://img.shields.io/badge/yamllint-1.37-green)
 ![helm](https://img.shields.io/badge/helm-3.18-green)
+![terraform](https://img.shields.io/badge/terraform-1.12-green)
 ![k9s](https://img.shields.io/badge/k9s-0.50-green)
 ![kind](https://img.shields.io/badge/kind-0.29-green)
 ![kubectx](https://img.shields.io/badge/kubectx-0.9-green)
 
 ## Features
 
-- Continuous delivery for Kubernetes applications
-- GitOps for Kubernetes applications
+- Argo CD for Continuous delivery for Kubernetes applications
+- Terraform for Infrastructure as Code
 - Taskfiles for repeatable tasks
 
 ## Prerequisites
@@ -92,21 +92,40 @@ This project uses [Devbox](https://www.jetify.com/devbox/) to manage the develop
 
 3. **Start the Devbox Environment**
    ```bash
-   devbox shell
+   devbox shell # Start the devbox environment
    ```
+> Note - The first time you run `devbox shell`, it will take a few minutes to install the necessary tools. But after that it will be much faster.
 
 ## Usage
 
-This project uses `Taskfile.yml` for managing the local development environment and `Taskfile.gitflow.yml` for Git workflow. Below is a detailed guide on how to use them.
+This project is designed for a simple, one-command setup. All necessary actions are orchestrated through `Taskfile.yml`.
 
-### Environment Setup and Application Management
+There are 2 application.yaml files:
 
-The `Taskfile.yml` contains tasks for setting up your local Kubernetes cluster and deploying Argo CD.
+1. `0-application.yaml` - This is the application.yaml file with app of apps pattern, TF and helm.
+2. `1-application.yaml` - This is the application.yaml file *WITHOUT* app of apps pattern, TF and helm.
 
-- **`task create-cluster`**: Creates a local `kind` cluster named `argocd-demo`.
-- **`task expose-kubeconfig`**: Exports the `kubeconfig` for the `kind` cluster to a file named `config-kind-dev.txt`, allowing you to connect to the cluster with tools like Lens.
-- **`task install-argocd`**: Installs Argo CD into the `argocd` namespace and forwards port `8080` to the Argo CD server, making it accessible at `localhost:8080`.
-- **`task ports`**: Lists all in-use ports.
+
+#### 🚀 Quick Start
+
+To create the local Kubernetes cluster and deploy Argo CD, simply run:
+
+```sh
+task install-argocd
+```
+
+This single command will:
+1.  Create a local Kind cluster (if it's not already running).
+2.  Deploy Argo CD using the Terraform configuration.
+
+#### Other Available Commands
+
+-   **`task forward-argocd-ui`**: Forwards the Argo CD server UI to `localhost:8080`.
+-   **`task argocd-init-passwd`**: Retrieves the initial admin password for the Argo CD UI.
+-   **`task expose-kubeconfig`**: Exports the cluster's kubeconfig to a file (`config-kind-dev.txt`) for use with tools like Lens.
+-   **`task ports`**: Lists all in-use ports.
+
+> To see a full list of all available tasks, run `task --list-all`
 
 ### Git Workflow with Git Flow
 
@@ -121,22 +140,29 @@ The `Taskfile.gitflow.yml` provides a structured Git workflow using Git Flow. Th
 - **`task gitflow:hotfix:start version=<version>`**: Starts a new hotfix branch.
 - **`task gitflow:hotfix:finish version=<version>`**: Finishes a hotfix.
 
+> use `task -t Taskfile.gitflow.yml --list-all` to see all gitflow tasks
+
 ### Kubernetes Manifests
 
-The `k8s` directory contains the Kubernetes manifests for the sample application:
+The `environments/dev/k8s` directory contains the Kubernetes manifests for the sample application:
 
 - **`deployment.yml`**: Defines the deployment for the application.
 - **`service.yml`**: Defines the service to expose the application.
 
 
-
 ## Roadmap
-
-* [ ] Helm 
-* [ ] App of apps pattern
+* [x] ArgoCD
+* [x] Terraform
+* [x] Helm 
+* [x] App of apps pattern
 * [ ] Image updater
 * [ ] Deployment freezing   
 * [ ] 
+
+## NOTES
+- The `1-application.yaml` file is the same as the `0-application.yaml` it is the file we used initially before we added the app of apps pattern, tf and helm
+- We number the files because we will be adding more and more files in the future
+
 
 ## Contributors
 
