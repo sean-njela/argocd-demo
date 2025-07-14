@@ -4,8 +4,9 @@
   <h1>Argo CD Personal Project</h1>
   
   <p>
-    This is a personal project to showcase my Argo CD knowledge. I am using this project to learn Argo CD and to build applications that I can use to test Argo CD. I will keep adding more applications to this project as I learn more about Argo CD.
+    A professional portfolio project showcasing GitOps implementation with Argo CD, Kubernetes, and Infrastructure as Code. This project demonstrates DevOps best practices using modern tools and techniques.
 
+    The project uses Terraform to provision Argo CD into a Kind cluster, implements the App of Apps pattern, and leverages Helm charts for application deployment.
   </p>
   
 <p>
@@ -47,6 +48,7 @@
 ## Screenshots
 
 <div align="center"> 
+  <img src="assets/screenshot2.png" alt="argocd_image_updater"/>
   <img src="assets/argocd_apps_page.webp" alt="argocd_apps_page"/>
 </div>
 
@@ -59,7 +61,6 @@
 ![Taskfile](https://img.shields.io/badge/Taskfile-3.44.0-green)
 ![gitflow](https://img.shields.io/badge/gitflow-1.12-green)
 ![kubectl](https://img.shields.io/badge/kubectl-1.33-green)
-![tilt](https://img.shields.io/badge/tilt-0.35-green)
 ![yq](https://img.shields.io/badge/yq-3.4-green)
 ![jq](https://img.shields.io/badge/jq-1.8-green)
 ![yamllint](https://img.shields.io/badge/yamllint-1.37-green)
@@ -81,6 +82,11 @@ This project uses [Devbox](https://www.jetify.com/devbox/) to manage the develop
 
 ### Required Tools
 
+0. **install Docker**
+   - Follow the [installation instructions](https://docs.docker.com/get-docker/) for your operating system
+
+> The rest of the tools are installed using devbox
+
 1. **Install Devbox**
    - Follow the [installation instructions](https://www.jetify.com/devbox/docs/installing_devbox/) for your operating system
 
@@ -90,9 +96,12 @@ This project uses [Devbox](https://www.jetify.com/devbox/) to manage the develop
    cd argocd-demo
    ```
 
-3. **Start the Devbox Environment**
+3. **Start the Devbox Environment and poetry environment**
    ```bash
    devbox shell # Start the devbox environment
+   poetry install # Install dependencies
+   poetry env activate # use the output to activate the poetry environment
+   mkdocs serve # Start the mkdocs server http://127.0.0.1:8000/argocd-demo/
    ```
 > Note - The first time you run `devbox shell`, it will take a few minutes to install the necessary tools. But after that it will be much faster.
 
@@ -151,17 +160,37 @@ The `environments/dev/k8s` directory contains the Kubernetes manifests for the s
 
 
 ## Roadmap
-* [x] ArgoCD
-* [x] Terraform
-* [x] Helm 
+* [x] ArgoCD implementation
+* [x] Terraform infrastructure as code
+* [x] Helm chart integration
 * [x] App of apps pattern
-* [ ] Image updater
-* [ ] Deployment freezing   
-* [ ] 
+* [x] Comprehensive documentation
+* [ ] ArgoCD Image Updater
+* [ ] Deployment freezing
+* [ ] Notification system
 
 ## NOTES
 - The `1-application.yaml` file is the same as the `0-application.yaml` it is the file we used initially before we added the app of apps pattern, tf and helm
 - We number the files because we will be adding more and more files in the future
+
+## Documentation
+
+Comprehensive documentation is available in the `docs/` directory. You can view it locally by running:
+
+```bash
+mkdocs serve # make sure you are in the poetry environment (check prerequisites)
+```
+
+Then navigate to [http://127.0.0.1:8000/argocd-demo/](http://127.0.0.1:8000/argocd-demo/)
+
+The documentation covers:
+- Project architecture
+- ArgoCD implementation details
+- Application deployment process
+- Environment management
+- Terraform infrastructure
+- Helm chart structure
+- Automation with Task runner
 
 ## Contributors
 
