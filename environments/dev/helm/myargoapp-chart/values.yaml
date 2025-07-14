@@ -1,0 +1,16 @@
+replicaCount: 3
+
+image:
+  repository: nanajanashia/argocd-app
+  tag: 1.0
+  pullPolicy: IfNotPresent
+
+service:
+  type: ClusterIP
+  port: 8080
+
+ingress:
+  enabled: false
+  host: example.com
+
+namespace: argocd-demo
