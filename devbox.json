@@ -19,7 +19,8 @@
     "k9s@0.50",
     "kind@0.29",
     "kubectx@0.9",
-    "argocd@latest"
+    "argocd@2.14",
+    "terraform@1.12"
   ],
   "shell": {
     "init_hook": [

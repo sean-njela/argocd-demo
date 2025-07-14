@@ -1,0 +1,3 @@
+The apps folder contains the applications we want to deploy inside the dev environment. So u=you would have another apps folder for prod and another for staging.
+
+The my-argocd-app0.yaml and my-argocd-app1.yaml point to the individual applications we want to deploy inside the dev environment. The my-argocd-app0.yaml is the application that uses helm and the my-argocd-app1.yaml is the application that uses k8s manifests.

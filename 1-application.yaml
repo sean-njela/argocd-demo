@@ -1,0 +1,27 @@
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: my-argocd-app # name of the app
+  namespace: argocd # namespace of the app
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io # this will make argocd delete the resources when the app is deleted
+
+spec:
+  project: default # project to deploy to
+  source:
+    repoURL: https://github.com/sean-njela/argocd-demo.git
+    targetRevision: main # branch to deploy from (or HEAD for latest commit)
+    path: environments/dev/k8s # path to the k8s folder
+  destination:
+    server: https://kubernetes.default.svc # kubernetes server
+    namespace: argocd-demo-ns # namespace to deploy to | argocd-demo-ns is created by argocd if it does not exist
+  syncPolicy: 
+    syncOptions:
+      - CreateNamespace=true # create namespace if it does not exist
+      - Validate=true # if the deployment has any issues, it will not be deployed
+    automated:
+      prune: true # prune resources that are not in the repo
+      selfHeal: true # disregard any changes made to the cluster directly
+      allowEmpty: false # do not allow empty sync
+      

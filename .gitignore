@@ -417,3 +417,20 @@ FodyWeavers.xsd
 *.msm
 *.msp
 config-kind-dev.txt
+
+# === Terraform ===
+terraform/.terraform/               # Local plugin/cache dir
+terraform/*.tfstate                 # State files
+terraform/*.tfstate.*               # Backup or partial state files
+terraform/crash.log                 # Crash logs from terraform
+terraform/*.tfvars                  # Usually contains secrets
+terraform/*.tfvars.json
+terraform/override.tf               # Local override files
+terraform/override.tf.json
+terraform/_override.tf
+terraform/_override.tf.json
+
+# === Helm ===
+environments/dev/helm/*.tgz                     # Packaged Helm charts
+environments/dev/helm/.release-name/            # Helm release metadata directory (optional)
+
