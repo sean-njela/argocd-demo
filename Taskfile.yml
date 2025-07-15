@@ -5,21 +5,36 @@ tasks:
     cmds:
       - task --list-all
 
+
+# -------------- System Management -------------- 07/15/2025 ---------------- #
+
   ports:
-    desc: "This is a command list ports in use"
+    desc: "This is a command to list ports in use"
     cmds:
       - ss -tunl
+
+
+# -------------- Docs -------------- 07/15/2025 ---------------- #
+
+  docs:
+    desc: "🌐 Serve docs locally with live reload -> http://127.0.0.1:8000/argocd-demo/"
+    cmds:
+      - poetry run mkdocs serve --clean
+
+# -------------- Cluster Management -------------- 07/15/2025 ---------------- #
 
   create-cluster:
     desc: "Create a Kind cluster if it doesn't already exist"
     cmds:
       - kind create cluster -n argocd-demo --image kindest/node:v1.33.1
+      - kubectx kind-argocd-demo
     status:
       - kind get clusters | grep argocd-demo
 
   expose-kubeconfig:
     desc: "Expose cluster kubeconfig"
     cmds:
+      - kubectx kind-argocd-demo
       - cat ~/.kube/config > config-kind-dev.txt
       - echo "Copy config-kind-dev.txt into lens to view your cluster"
 
@@ -28,45 +43,45 @@ tasks:
     dir: terraform
     deps:
       - create-cluster
-      - clean-argocd
     cmds:
+      - kubectx kind-argocd-demo
       - terraform init
       - terraform apply -auto-approve
 
-  forward-argocd-ui:
+  port-forward-argocd:
     desc: "Forward the Argo CD server UI to localhost:8080"
     cmds:
+      - kubectx kind-argocd-demo
       - kubectl port-forward svc/argocd-server -n argocd 8080:443
 
-  clean-argocd:
-    desc: "Deletes any existing Argo CD installation from the cluster"
-    cmds:
-      - kubectl delete -n argocd -f https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml --ignore-not-found=true
-  
   argocd-init-passwd:
     desc: "This is a command to initialize argocd password. Use admin as username"
     cmds:
+      - kubectx kind-argocd-demo
       - kubens argocd
       - argocd admin initial-password
 
   bootstrap-app0:
     desc: "Bootstrap argocd application using app0"
     cmds:
+      - kubectx kind-argocd-demo
       - kubens argocd
       - kubectl apply -f 0-application.yaml
 
-  tf-delete:
-    desc: "Deletes the terraform resources"
+  cleanup:
+    desc: "Deletes the terraform resources and the kind cluster"
     dir: terraform
     cmds:
+      - kubectx kind-argocd-demo
       - terraform destroy -auto-approve
-
+      - kind delete cluster -n argocd-demo
 
 # -------------- Image Updater -------------- 07/14/2025 ---------------- #
 
   helm-add-argocd: # we need this to access the image updater chart
     desc: "Add argocd repo (image updater chart lives here)"
     cmds:
+      - kubectx kind-argocd-demo
       - kubens argocd
       - helm repo add argocd https://argoproj.github.io/argo-helm
       - helm repo update
