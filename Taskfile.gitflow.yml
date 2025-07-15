@@ -194,7 +194,7 @@ tasks:
         git push origin {{.DEV_BRANCH}}
         git push --tags
 
-        poetry run mike deploy "$version" latest
+        poetry run mike deploy --update-aliases "$version" latest
         git push origin gh-pages
     requires:
       vars:
