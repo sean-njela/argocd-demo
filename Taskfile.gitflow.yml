@@ -193,6 +193,9 @@ tasks:
         git push origin {{.MAIN_BRANCH}}
         git push origin {{.DEV_BRANCH}}
         git push --tags
+
+        mike deploy "$version" latest
+        git push origin gh-pages
     requires:
       vars:
         - version
@@ -261,6 +264,9 @@ tasks:
         git push origin {{.DEV_BRANCH}} || (echo "❌ Failed to push to {{.DEV_BRANCH}}. Please push manually." && exit 1)
         git push --tags || (echo "❌ Failed to push tags. Please push manually." && exit 1)
         
+        mike deploy "$version"
+        git push origin gh-pages
+
         echo "✅ Hotfix v$version completed successfully!"
     requires:
       vars:

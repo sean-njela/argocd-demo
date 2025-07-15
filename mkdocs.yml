@@ -59,6 +59,7 @@ nav:
       - ArgoCD Overview: argocd/overview.md
       - Application Deployment: argocd/applications.md
       - Environment Management: argocd/environments.md
+      - Argo CD Image Updater: argocd/image-updater.md
   - Helm Charts:
       - Chart Structure: helm/structure.md
   - Automation:
@@ -76,18 +77,27 @@ extra:
 plugins:
   - search:
       lang: en
-  - mermaid2
+  # - mermaid2:
+  #     arguments:
+  #       startOnLoad: true
+  #       theme: default
+  #     javascript: https://unpkg.com/mermaid@10.4.0/dist/mermaid.min.js
 
 markdown_extensions:
-  - admonition
-  - pymdownx.details
   - pymdownx.superfences
-  - pymdownx.tabbed:
-      alternate_style: true
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format #this will flag in VSCode but ignore
   - pymdownx.highlight:
       anchor_linenums: true
       line_spans: __span
       pygments_lang_class: true
+  - pymdownx.tabbed:
+      alternate_style: true
+  - admonition
+  - pymdownx.details
   - pymdownx.inlinehilite
   - pymdownx.snippets
   - attr_list

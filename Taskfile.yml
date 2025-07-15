@@ -5,10 +5,24 @@ tasks:
     cmds:
       - task --list-all
 
+
+# -------------- System Management -------------- 07/15/2025 ---------------- #
+
   ports:
     desc: "This is a command list ports in use"
     cmds:
       - ss -tunl
+
+
+# -------------- Docs -------------- 07/15/2025 ---------------- #
+
+  docs:
+    desc: "🌐 Serve docs locally with live reload -> http://127.0.0.1:8000/argocd-demo/"
+    cmds:
+      - poetry run mkdocs serve --clean
+
+# -------------- Cluster Management -------------- 07/15/2025 ---------------- #
+
 
   create-cluster:
     desc: "Create a Kind cluster if it doesn't already exist"
