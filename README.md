@@ -129,10 +129,14 @@ This single command will:
 
 #### Other Available Commands
 
--   **`task forward-argocd-ui`**: Forwards the Argo CD server UI to `localhost:8080`.
+-   **`task create-cluster`**: Creates a local Kind cluster (if it's not already running).
+-   **`task install-argocd`**: Installs Argo CD using Terraform (creates the cluster if it doesn't already exist).
+-   **`task bootstrap-app0`**: Bootstrap argocd application using app0 (this is the application.yaml file with app of apps pattern, TF and helm).
+-   **`task port-forward-argocd`**: Forwards the Argo CD server UI to `localhost:8080`.
 -   **`task argocd-init-passwd`**: Retrieves the initial admin password for the Argo CD UI.
 -   **`task expose-kubeconfig`**: Exports the cluster's kubeconfig to a file (`config-kind-dev.txt`) for use with tools like Lens.
 -   **`task ports`**: Lists all in-use ports.
+-   **`task cleanup`**: Deletes the terraform resources and the kind cluster.
 
 > To see a full list of all available tasks, run `task --list-all`
 
@@ -153,11 +157,9 @@ The `Taskfile.gitflow.yml` provides a structured Git workflow using Git Flow. Th
 
 ### Kubernetes Manifests
 
-The `environments/dev/k8s` directory contains the Kubernetes manifests for the sample application:
+The `environments/dev/k8s` directory contains simple Kubernetes manifests for the sample application
 
-- **`deployment.yml`**: Defines the deployment for the application.
-- **`service.yml`**: Defines the service to expose the application.
-
+The `environments/dev/helm` directory contains Helm charts for the sample application (default)
 
 ## Roadmap
 * [x] ArgoCD implementation

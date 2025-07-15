@@ -90,3 +90,5 @@ or
 argocd-image-updater.argoproj.io/write-back-method: argocd
 ```
 
+---
+

@@ -8,4 +8,4 @@ service:
   type: ClusterIP
   port: 8080
 
-namespace: argocd-demo
+namespace: argocd-demo-ns-with-helm
