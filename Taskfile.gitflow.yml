@@ -264,7 +264,7 @@ tasks:
         git push origin {{.DEV_BRANCH}} || (echo "❌ Failed to push to {{.DEV_BRANCH}}. Please push manually." && exit 1)
         git push --tags || (echo "❌ Failed to push tags. Please push manually." && exit 1)
         
-        mike deploy "$version"
+        poetry run mike deploy "$version"
         git push origin gh-pages
 
         echo "✅ Hotfix v$version completed successfully!"
