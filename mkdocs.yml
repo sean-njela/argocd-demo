@@ -1,9 +1,9 @@
 site_name: ArgoCD DevOps Portfolio | Sean Njela
 site_description: Professional ArgoCD implementation showcasing GitOps, Infrastructure as Code, and Kubernetes expertise
-site_url: https://sean-njela.github.io/argocd-demo
+site_url: https://sean-njela.github.io/argocd-demo/
 site_author: Sean Njela
-repo_url: https://github.com/sean-njela/argocd-demo
-repo_name: sean-njela/argocd-demo
+repo_url: https://github.com/sean-njela/argocd-demo/
+repo_name: sean-njela/argocd-demo/
 edit_uri: edit/main/docs/
 copyright: Copyright &copy; 2024 Sean Njela - Personal Portfolio Project
 
@@ -73,10 +73,16 @@ extra:
   generator: false
   version:
     provider: mike
+    alias: true
+    default: latest
+    
 
 plugins:
   - search:
       lang: en
+  - mike:
+      alias_type: redirect   # options: symlink (default), redirect, copy
+      version_selector: true
   # - mermaid2:
   #     arguments:
   #       startOnLoad: true
