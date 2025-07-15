@@ -5,13 +5,13 @@
 # But here we will install argocd using helm in tf 
 # It makes it easier to manage the variables and dependencies
 resource "helm_release" "argocd" {
-    name = "argocd"
-    repository = "https://argoproj.github.io/argo-helm"
-    chart = "argo-cd"
-    version = "3.35.4"
-    namespace = "argocd"
-    create_namespace = true
-    values = [file("values/argocd-values.yaml")]
+  name             = "argocd"
+  repository       = "https://argoproj.github.io/argo-helm"
+  chart            = "argo-cd"
+  version          = "3.35.4"
+  namespace        = "argocd"
+  create_namespace = true
+  values           = [file("values/argocd-values.yaml")]
 }
 
 ### NOTES ###

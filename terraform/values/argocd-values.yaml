@@ -5,4 +5,4 @@ global:
 
 server:
   extraArgs:
-    - "--insecure"
+    - "--insecure" 

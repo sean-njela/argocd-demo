@@ -1,0 +1,7 @@
+--- 
+global:
+  image:
+    version: "v0.12.2"
+
+metrics:
+  enabled: true # Enable prometheus metrics

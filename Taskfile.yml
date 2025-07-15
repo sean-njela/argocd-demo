@@ -17,7 +17,7 @@ tasks:
 # -------------- Docs -------------- 07/15/2025 ---------------- #
 
   docs:
-    desc: "🌐 Serve docs locally with live reload -> http://127.0.0.1:8000/argocd-demo/"
+    desc: "🌐 Serve docs locally -> http://127.0.0.1:8000/argocd-demo/"
     cmds:
       - poetry run mkdocs serve --clean
 
@@ -38,11 +38,12 @@ tasks:
       - cat ~/.kube/config > config-kind-dev.txt
       - echo "Copy config-kind-dev.txt into lens to view your cluster"
 
-  install-argocd:
-    desc: "Install or update Argo CD using Terraform"
+  tf-apply: # any resource mentioned in tf files will be installed
+    desc: "Install or update Argo CD resources using Terraform"
     dir: terraform
     deps:
       - create-cluster
+      - tf-lint
     cmds:
       - kubectx kind-argocd-demo
       - terraform init
@@ -79,9 +80,27 @@ tasks:
 # -------------- Image Updater -------------- 07/14/2025 ---------------- #
 
   helm-add-argocd: # we need this to access the image updater chart
-    desc: "Add argocd repo (image updater chart lives here)"
+    desc: "Add argocd helm repo (image updater chart lives here)"
     cmds:
       - kubectx kind-argocd-demo
       - kubens argocd
       - helm repo add argocd https://argoproj.github.io/argo-helm
       - helm repo update
+
+  tf-lint:
+    desc: "Makes sure tf files arecorrectly formatted before running tf commands"
+    dir: terraform
+    cmds:
+      - terraform validate
+      - terraform fmt -check
+
+  ssh-keygen:
+    desc: "Generate ssh key for argocd-image-updater"
+    cmds:
+      - ssh-keygen -t ed25519 -C "argocd@image-updater" -f ~/.ssh/argocd_image_updater_ed25519
+
+  del-ssh-key:
+    desc: "Delete ssh key for argocd-image-updater"
+    cmds:
+      - rm ~/.ssh/argocd_image_updater_ed25519
+      - rm ~/.ssh/argocd_image_updater_ed25519.pub

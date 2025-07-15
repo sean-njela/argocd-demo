@@ -130,7 +130,7 @@ This single command will:
 #### Other Available Commands
 
 -   **`task create-cluster`**: Creates a local Kind cluster (if it's not already running).
--   **`task install-argocd`**: Installs Argo CD using Terraform (creates the cluster if it doesn't already exist).
+-   **`task tf-apply`**: Installs Argo CD and argocd-image-updater using Terraform (creates the cluster if it doesn't already exist).
 -   **`task bootstrap-app0`**: Bootstrap argocd application using app0 (this is the application.yaml file with app of apps pattern, TF and helm).
 -   **`task port-forward-argocd`**: Forwards the Argo CD server UI to `localhost:8080`.
 -   **`task argocd-init-passwd`**: Retrieves the initial admin password for the Argo CD UI.
@@ -174,6 +174,7 @@ The `environments/dev/helm` directory contains Helm charts for the sample applic
 ## NOTES
 - The `1-application.yaml` file is the same as the `0-application.yaml` it is the file we used initially before we added the app of apps pattern, tf and helm
 - We number the files because we will be adding more and more files in the future
+- With TF we can customise the values of the helm chart on creation. To check which values we can edit, use helm show e.g `helm show values argocd/argocd-image-updater > image-updater-values.yaml` to check the values. Then specify in a values.yaml in the values folder the values you want to override.
 
 ## Documentation
 

@@ -60,6 +60,7 @@ nav:
       - Application Deployment: argocd/applications.md
       - Environment Management: argocd/environments.md
       - Argo CD Image Updater: argocd/image-updater.md
+      - Argo CD Image Updater Setup: argocd/image-updater-setup.md
   - Helm Charts:
       - Chart Structure: helm/structure.md
   - Automation:

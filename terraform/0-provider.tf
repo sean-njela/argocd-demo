@@ -1,8 +1,8 @@
 provider "helm" {
-    kubernetes = {
-        # Path to the kubeconfig file because we are using kind
-        config_path = "~/.kube/config" 
-    }
+  kubernetes = {
+    # Path to the kubeconfig file because we are using kind
+    config_path = "~/.kube/config"
+  }
 }
 
 # If you were using a managed cluster e.g. AWS EKS
