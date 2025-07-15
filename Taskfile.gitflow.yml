@@ -196,6 +196,7 @@ tasks:
 
         poetry run mike deploy --update-aliases "$version" latest
         git push origin gh-pages
+        poetry run mike set-default latest --push
     requires:
       vars:
         - version
@@ -264,8 +265,8 @@ tasks:
         git push origin {{.DEV_BRANCH}} || (echo "❌ Failed to push to {{.DEV_BRANCH}}. Please push manually." && exit 1)
         git push --tags || (echo "❌ Failed to push tags. Please push manually." && exit 1)
         
-        poetry run mike deploy "$version"
-        git push origin gh-pages
+        poetry run mike deploy --push --update-aliases "{{.version}}" latest
+        poetry run mike set-default latest --push
 
         echo "✅ Hotfix v$version completed successfully!"
     requires:
