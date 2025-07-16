@@ -92,3 +92,4 @@ argocd-image-updater.argoproj.io/write-back-method: argocd
 
 ---
 
+Next, check out [Argo CD Image Updater Setup](image-updater-setup.md)

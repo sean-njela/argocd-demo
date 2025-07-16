@@ -6,38 +6,6 @@ This document details the Terraform infrastructure as code implementation used t
 
 Terraform is used in this project to provide a reproducible, version-controlled approach to infrastructure provisioning. The primary focus is on installing and configuring ArgoCD in the Kubernetes cluster.
 
-## Directory Structure
-
-```
-terraform/
-├── 0-provider.tf       # Provider configuration
-├── 1-argocd.tf         # ArgoCD installation
-├── values/             # Helm chart values
-│   └── argocd-values.yaml  # ArgoCD configuration values
-├── .terraform/         # Terraform state directory (gitignored)
-├── terraform.tfstate   # Terraform state file
-└── .terraform.lock.hcl # Dependency lock file
-```
-
-## Provider Configuration
-
-The project uses the Kubernetes and Helm providers to interact with the Kind cluster:
-
-```hcl
-# From 0-provider.tf
-provider "kubernetes" {
-  config_path = "~/.kube/config"
-  config_context = "kind-argocd-demo"
-}
-
-provider "helm" {
-  kubernetes {
-    config_path = "~/.kube/config"
-    config_context = "kind-argocd-demo"
-  }
-}
-```
-
 ## ArgoCD Installation
 
 ArgoCD is installed using the official Helm chart through Terraform:

@@ -17,16 +17,29 @@ tasks:
 # -------------- Docs -------------- 07/15/2025 ---------------- #
 
   docs:
-    desc: "🌐 Serve docs locally with live reload -> http://127.0.0.1:8000/argocd-demo/"
+    desc: "🌐 Serve docs locally -> http://127.0.0.1:8000/argocd-demo/"
     cmds:
       - poetry run mkdocs serve --clean
 
 # -------------- Cluster Management -------------- 07/15/2025 ---------------- #
 
+  dev:
+    desc: "Spin up teh complete dev cluster"
+    cmds:
+      - task: create-cluster
+      - task: tf-apply
+      - task: bootstrap-sealed-secret
+      - task: bootstrap-app0
+      - task: argocd-init-passwd
+      - task: expose-kubeconfig
+      - task: helm-add-argocd
+      - echo "Done"
+  
+
   create-cluster:
     desc: "Create a Kind cluster if it doesn't already exist"
     cmds:
-      - kind create cluster -n argocd-demo --image kindest/node:v1.33.1
+      - kind create cluster -n argocd-demo --image kindest/node:v1.33.1 || echo "Cluster already exists"
       - kubectx kind-argocd-demo
     status:
       - kind get clusters | grep argocd-demo
@@ -38,11 +51,12 @@ tasks:
       - cat ~/.kube/config > config-kind-dev.txt
       - echo "Copy config-kind-dev.txt into lens to view your cluster"
 
-  install-argocd:
-    desc: "Install or update Argo CD using Terraform"
+  tf-apply: # any resource mentioned in tf files will be installed
+    desc: "Install or update Argo CD resources using Terraform"
     dir: terraform
     deps:
       - create-cluster
+      - tf-lint
     cmds:
       - kubectx kind-argocd-demo
       - terraform init
@@ -60,6 +74,13 @@ tasks:
       - kubectx kind-argocd-demo
       - kubens argocd
       - argocd admin initial-password
+
+  bootstrap-sealed-secret:
+    desc: "Bootstrap sealed image updater secret"
+    cmds:
+      - kubectx kind-argocd-demo
+      - kubens argocd
+      - kubectl apply -f 0-repo-secret.yaml
 
   bootstrap-app0:
     desc: "Bootstrap argocd application using app0"
@@ -79,9 +100,37 @@ tasks:
 # -------------- Image Updater -------------- 07/14/2025 ---------------- #
 
   helm-add-argocd: # we need this to access the image updater chart
-    desc: "Add argocd repo (image updater chart lives here)"
+    desc: "Add argocd helm repo (image updater chart lives here)"
     cmds:
       - kubectx kind-argocd-demo
       - kubens argocd
       - helm repo add argocd https://argoproj.github.io/argo-helm
       - helm repo update
+
+  helm-dry-run:
+    desc: "Dry run helm chart to check if it will install successfully"
+    cmds:
+      - kubectx kind-argocd-demo
+      - kubens argocd
+      - helm install myargoapp-chart environments/dev/helm/myargoapp-chart --values environments/dev/helm/myargoapp-chart/values.yaml --dry-run --debug
+
+  tf-lint:
+    desc: "Makes sure tf files arecorrectly formatted before running tf commands"
+    dir: terraform
+    cmds:
+      - terraform validate
+      - terraform fmt -check
+
+  ssh-keygen:
+    desc: "Generate ssh key for argocd-image-updater"
+    cmds:
+      - ssh-keygen -t ed25519 -C "argocd@image-updater" -f ~/.ssh/argocd_image_updater_ed25519
+
+  del-ssh-key:
+    desc: "Delete ssh key for argocd-image-updater"
+    cmds:
+      - rm ~/.ssh/argocd_image_updater_ed25519
+      - rm ~/.ssh/argocd_image_updater_ed25519.pub
+
+
+  
