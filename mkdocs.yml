@@ -48,9 +48,8 @@ nav:
       - index.md
       - Disclaimer: disclaimer.md
   - Quick Start:
-      - Getting Started: quickstart/getting-started.md
       - Prerequisites: quickstart/prerequisites.md
-      - Installation: quickstart/installation.md
+      - Getting Started: quickstart/getting-started.md
   - Architecture:
       - System Overview: architecture/overview.md
   - Infrastructure:
@@ -61,8 +60,6 @@ nav:
       - Environment Management: argocd/environments.md
       - Argo CD Image Updater: argocd/image-updater.md
       - Argo CD Image Updater Setup: argocd/image-updater-setup.md
-  - Helm Charts:
-      - Chart Structure: helm/structure.md
   - Automation:
       - Task Runner: automation/taskfile.md
 extra:

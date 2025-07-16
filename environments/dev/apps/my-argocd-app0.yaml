@@ -4,13 +4,20 @@ kind: Application
 metadata:
   name: my-argocd-app-with-helm  # name of the app
   namespace: argocd # namespace of the app
+  annotations:
+    argocd-image-updater.argoproj.io/image-list: argocd-app=devopssean/zta_demo_app
+    argocd-image-updater.argoproj.io/argocd-app.update-strategy: semver
+    argocd-image-updater.argoproj.io/argocd-app.allow-tags: ">=1.0.0,<2.0.0"
+    argocd-image-updater.argoproj.io/argocd-app.helm-image-tag-spec: image.tag
+    argocd-image-updater.argoproj.io/argocd-app.helm-image-name-spec: image.repository
+    argocd-image-updater.argoproj.io/write-back-method: git
   finalizers:
     - resources-finalizer.argocd.argoproj.io/foreground # this will make argocd delete the resources when the app is deleted
 
 spec:
   project: default # project to deploy to
   source:
-    repoURL: https://github.com/sean-njela/argocd-demo.git
+    repoURL: ssh://git@github.com/sean-njela/argocd-demo.git
     targetRevision: main # branch to deploy from (or HEAD for latest commit)
     path: environments/dev/helm/myargoapp-chart # path to the helm chart (app0)
   destination:

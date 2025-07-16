@@ -120,23 +120,42 @@ There are 2 application.yaml files:
 To create the local Kubernetes cluster and deploy Argo CD, simply run:
 
 ```sh
-task install-argocd
+task dev
 ```
 
 This single command will:
 1.  Create a local Kind cluster (if it's not already running).
 2.  Deploy Argo CD using the Terraform configuration.
+3.  Bootstrap argocd application using 0-application.yaml (this is the application.yaml file with app of apps pattern, TF and helm).
+4.  Expose cluster kubeconfig for tools like lens
+5.  Add argocd helm repo
+
+Then in two seperate terminal windows run:
+
+```sh
+task docs # This will serve the docs locally at http://127.0.0.1:8000/argocd-demo/
+```
+
+And
+
+```sh
+task port-forward-argocd # This will forward the Argo CD server UI to localhost:8080
+```
+
+You can now access the Argo CD UI at http://localhost:8080 with username `admin` and for the password run:
+
+```sh
+task argocd-init-passwd
+```
+
+Use the following command to clean up the cluster and terraform resources:
+
+```sh
+task cleanup
+```
+This will delete the cluster and terraform resources.
 
 #### Other Available Commands
-
--   **`task create-cluster`**: Creates a local Kind cluster (if it's not already running).
--   **`task tf-apply`**: Installs Argo CD and argocd-image-updater using Terraform (creates the cluster if it doesn't already exist).
--   **`task bootstrap-app0`**: Bootstrap argocd application using app0 (this is the application.yaml file with app of apps pattern, TF and helm).
--   **`task port-forward-argocd`**: Forwards the Argo CD server UI to `localhost:8080`.
--   **`task argocd-init-passwd`**: Retrieves the initial admin password for the Argo CD UI.
--   **`task expose-kubeconfig`**: Exports the cluster's kubeconfig to a file (`config-kind-dev.txt`) for use with tools like Lens.
--   **`task ports`**: Lists all in-use ports.
--   **`task cleanup`**: Deletes the terraform resources and the kind cluster.
 
 > To see a full list of all available tasks, run `task --list-all`
 
@@ -144,22 +163,13 @@ This single command will:
 
 The `Taskfile.gitflow.yml` provides a structured Git workflow using Git Flow. This helps in managing features, releases, and hotfixes in a standardized way.
 
-- **`task gitflow:init`**: Initializes Git Flow for the repository.
-- **`task gitflow:feature:start name=<feature-name>`**: Starts a new feature branch.
-- **`task gitflow:feature:push`**: Pushes the current feature branch to the remote repository.
-- **`task gitflow:feature:clean`**: Deletes the local feature branch after it has been merged.
-- **`task gitflow:release:start version=<version>`**: Starts a new release branch.
-- **`task gitflow:release:finish version=<version>`**: Finishes a release, which merges the release branch into `main` and `develop`, and tags the release.
-- **`task gitflow:hotfix:start version=<version>`**: Starts a new hotfix branch.
-- **`task gitflow:hotfix:finish version=<version>`**: Finishes a hotfix.
-
 > use `task -t Taskfile.gitflow.yml --list-all` to see all gitflow tasks
 
 ### Kubernetes Manifests
 
 The `environments/dev/k8s` directory contains simple Kubernetes manifests for the sample application
 
-The `environments/dev/helm` directory contains Helm charts for the sample application (default)
+The `environments/dev/helm` directory contains Helm charts for the same application (default in use)
 
 ## Roadmap
 * [x] ArgoCD implementation

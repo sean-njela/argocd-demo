@@ -10,133 +10,48 @@ The project uses [Task](https://taskfile.dev/) (a task runner / build tool) to a
 
 The main task definitions are stored in `Taskfile.yml` at the root of the project:
 
-```yaml
-version: '3'
-tasks:
-  default:
-    desc: "Default command"
-    cmds:
-      - task --list-all
-
-  ports:
-    desc: "This is a command list ports in use"
-    cmds:
-      - ss -tunl
-
-  create-cluster:
-    desc: "Create a Kind cluster if it doesn't already exist"
-    cmds:
-      - kind create cluster -n argocd-demo --image kindest/node:v1.33.1
-    status:
-      - kind get clusters | grep argocd-demo
-
-  expose-kubeconfig:
-    desc: "Expose cluster kubeconfig"
-    cmds:
-      - cat ~/.kube/config > config-kind-dev.txt
-      - echo "Copy config-kind-dev.txt into lens to view your cluster"
-
-  install-argocd:
-    desc: "Install or update Argo CD using Terraform"
-    dir: terraform
-    deps:
-      - create-cluster
-    cmds:
-      - terraform init
-      - terraform apply -auto-approve
-```
-
-Additional task files, such as `Taskfile.gitflow.yml`, provide specialized functionality.
-
-## Core Tasks
-
-### Cluster Management
+Available tasks:
 
 | Task | Description |
 |------|-------------|
-| `task create-cluster` | Creates a Kind cluster for local development |
-| `task delete-cluster` | Deletes the Kind cluster |
-| `task expose-kubeconfig` | Exports the kubeconfig to a file |
+| argocd-init-passwd | This is a command to initialize argocd password. Use admin as username |
+| bootstrap-app0 | Bootstrap argocd application using app0 |
+| cleanup | Deletes the terraform resources and the kind cluster |
+| create-cluster | Create a Kind cluster if it doesn't already exist |
+| default | Default command |
+| del-ssh-key | Delete ssh key for argocd-image-updater |
+| dev | Spin up teh complete dev cluster |
+| docs | 🌐 Serve docs locally -> http://127.0.0.1:8000/argocd-demo/ |
+| expose-kubeconfig | Expose cluster kubeconfig |
+| helm-add-argocd | Add argocd helm repo (image updater chart lives here) |
+| port-forward-argocd | Forward the Argo CD server UI to localhost:8080 |
+| ports | This is a command to list ports in use |
+| ssh-keygen | Generate ssh key for argocd-image-updater |
+| tf-apply | Install or update Argo CD resources using Terraform |
+| tf-lint | Makes sure tf files arecorrectly formatted before running tf commands |
 
-### ArgoCD Management
+
+Additional task files, such as `Taskfile.gitflow.yml`, provide repeatable gitflow functionality.
+
+Available gitflow tasks:
 
 | Task | Description |
 |------|-------------|
-| `task install-argocd` | Installs ArgoCD using Terraform |
-| `task forward-argocd-ui` | Forwards the ArgoCD UI to localhost:8080 |
-| `task argocd-init-passwd` | Retrieves the initial admin password |
-
-### Utility Tasks
-
-| Task | Description |
-|------|-------------|
-| `task ports` | Lists all in-use ports |
-| `task default` | Shows all available tasks |
-
-## GitFlow Tasks
-
-The project includes GitFlow automation in `Taskfile.gitflow.yml`:
-
-```yaml
-version: '3'
-tasks:
-  feature-start:
-    desc: "Start a new feature branch"
-    cmds:
-      - git checkout -b feature/{{.FEATURE_NAME}}
-    vars:
-      FEATURE_NAME:
-        sh: echo "{{.CLI_ARGS}}"
-
-  feature-finish:
-    desc: "Finish a feature branch"
-    cmds:
-      - git checkout main
-      - git merge --no-ff feature/{{.FEATURE_NAME}}
-      - git branch -d feature/{{.FEATURE_NAME}}
-    vars:
-      FEATURE_NAME:
-        sh: echo "{{.CLI_ARGS}}"
-```
-
-These tasks automate Git workflow operations following the GitFlow branching model.
-
-## Task Dependencies
-
-Tasks can depend on other tasks, ensuring prerequisites are met:
-
-```yaml
-install-argocd:
-  desc: "Install or update Argo CD using Terraform"
-  dir: terraform
-  deps:
-    - create-cluster
-  cmds:
-    - terraform init
-    - terraform apply -auto-approve
-```
-
-In this example, `install-argocd` depends on `create-cluster`, ensuring the cluster exists before attempting to install ArgoCD.
-
-## Task Variables
-
-Tasks can use variables for dynamic behavior:
-
-```yaml
-feature-start:
-  desc: "Start a new feature branch"
-  cmds:
-    - git checkout -b feature/{{.FEATURE_NAME}}
-  vars:
-    FEATURE_NAME:
-      sh: echo "{{.CLI_ARGS}}"
-```
-
-Variables can be:
-- Defined inline
-- Derived from command-line arguments
-- Generated from shell commands
-- Set from environment variables
+| argocd-init-passwd | This is a command to initialize argocd password. Use admin as username |
+| bootstrap-app0 | Bootstrap argocd application using app0 |
+| cleanup | Deletes the terraform resources and the kind cluster |
+| create-cluster | Create a Kind cluster if it doesn't already exist |
+| default | Default command |
+| del-ssh-key | Delete ssh key for argocd-image-updater |
+| dev | Spin up teh complete dev cluster |
+| docs | 🌐 Serve docs locally -> http://127.0.0.1:8000/argocd-demo/ |
+| expose-kubeconfig | Expose cluster kubeconfig |
+| helm-add-argocd | Add argocd helm repo (image updater chart lives here) |
+| port-forward-argocd | Forward the Argo CD server UI to localhost:8080 |
+| ports | This is a command to list ports in use |
+| ssh-keygen | Generate ssh key for argocd-image-updater |
+| tf-apply | Install or update Argo CD resources using Terraform |
+| tf-lint | Makes sure tf files arecorrectly formatted before running tf commands |
 
 ## Task Execution
 
@@ -186,6 +101,5 @@ deploy-app:
 
 ## Related Documentation
 
-- [Installation Guide](../quickstart/installation.md)
 - [ArgoCD Overview](../argocd/overview.md)
 - [Architecture Overview](../architecture/overview.md)
