@@ -23,10 +23,23 @@ tasks:
 
 # -------------- Cluster Management -------------- 07/15/2025 ---------------- #
 
+  dev:
+    desc: "Spin up teh complete dev cluster"
+    cmds:
+      - task: create-cluster
+      - task: tf-apply
+      - task: bootstrap-sealed-secret
+      - task: bootstrap-app0
+      - task: argocd-init-passwd
+      - task: expose-kubeconfig
+      - task: helm-add-argocd
+      - echo "Done"
+  
+
   create-cluster:
     desc: "Create a Kind cluster if it doesn't already exist"
     cmds:
-      - kind create cluster -n argocd-demo --image kindest/node:v1.33.1
+      - kind create cluster -n argocd-demo --image kindest/node:v1.33.1 || echo "Cluster already exists"
       - kubectx kind-argocd-demo
     status:
       - kind get clusters | grep argocd-demo
@@ -62,6 +75,13 @@ tasks:
       - kubens argocd
       - argocd admin initial-password
 
+  bootstrap-sealed-secret:
+    desc: "Bootstrap sealed image updater secret"
+    cmds:
+      - kubectx kind-argocd-demo
+      - kubens argocd
+      - kubectl apply -f 0-repo-secret.yaml
+
   bootstrap-app0:
     desc: "Bootstrap argocd application using app0"
     cmds:
@@ -87,6 +107,13 @@ tasks:
       - helm repo add argocd https://argoproj.github.io/argo-helm
       - helm repo update
 
+  helm-dry-run:
+    desc: "Dry run helm chart to check if it will install successfully"
+    cmds:
+      - kubectx kind-argocd-demo
+      - kubens argocd
+      - helm install myargoapp-chart environments/dev/helm/myargoapp-chart --values environments/dev/helm/myargoapp-chart/values.yaml --dry-run --debug
+
   tf-lint:
     desc: "Makes sure tf files arecorrectly formatted before running tf commands"
     dir: terraform
@@ -104,3 +131,6 @@ tasks:
     cmds:
       - rm ~/.ssh/argocd_image_updater_ed25519
       - rm ~/.ssh/argocd_image_updater_ed25519.pub
+
+
+  

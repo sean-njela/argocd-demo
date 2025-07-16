@@ -14,58 +14,53 @@ This project demonstrates GitOps principles using ArgoCD on a Kubernetes cluster
 
 ## Quick Setup
 
-For the fastest path to a working environment, run these commands:
+To create the local Kubernetes cluster and deploy Argo CD, simply run:
 
-```bash
-# Clone the repository
-git clone https://github.com/sean-njela/argocd-demo.git
-cd argocd-demo
+```sh
+task dev
+```
 
-# Create the Kind cluster and install ArgoCD
-task create-cluster
-task install-argocd
+This single command will:
+1.  Create a local Kind cluster (if it's not already running).
+2.  Deploy Argo CD using the Terraform configuration.
+3.  Bootstrap argocd application using 0-application.yaml (this is the application.yaml file with app of apps pattern, TF and helm).
+4.  Expose cluster kubeconfig for tools like lens
+5.  Add argocd helm repo
 
-# Access the ArgoCD UI
-task forward-argocd-ui
-# In a separate terminal, get the initial admin password
+Then in two seperate terminal windows run:
+
+```sh
+task docs # This will serve the docs locally at http://127.0.0.1:8000/argocd-demo/
+```
+
+And
+
+```sh
+task port-forward-argocd # This will forward the Argo CD server UI to localhost:8080
+```
+
+You can now access the Argo CD UI at http://localhost:8080 with username `admin` and for the password run:
+
+```sh
 task argocd-init-passwd
 ```
 
-The ArgoCD UI will be available at [http://localhost:8080](http://localhost:8080).
+Use the following command to clean up the cluster and terraform resources:
 
-## Next Steps
-
-After setting up the environment:
-
-1. [Review the prerequisites](prerequisites.md) to ensure your system meets all requirements
-2. [Follow the detailed installation guide](installation.md) for a step-by-step setup
-3. Deploy your first application with ArgoCD by following the [Application Deployment Guide](../argocd/applications.md)
-4. Explore the [Architecture Overview](../architecture/overview.md) to understand the system design
-
-## Project Structure
-
+```sh
+task cleanup
 ```
-argocd-demo/
-├── terraform/           # Terraform files for ArgoCD installation
-├── environments/        # Environment-specific configurations
-│   ├── dev/             # Development environment
-│   │   ├── apps/        # Application manifests
-│   │   └── helm/        # Helm charts
-├── docs/                # Documentation
-└── Taskfile.yml         # Task automation definitions
-```
+This will delete the cluster and terraform resources.
 
-## Common Tasks
+#### Other Available Commands
 
-| Task | Description |
-|------|-------------|
-| `task create-cluster` | Creates a Kind cluster for local development |
-| `task install-argocd` | Installs ArgoCD using Terraform |
-| `task forward-argocd-ui` | Forwards the ArgoCD UI to localhost:8080 |
-| `task argocd-init-passwd` | Retrieves the initial admin password |
-| `task expose-kubeconfig` | Exports the cluster's kubeconfig |
+> To see a full list of all available tasks, run `task --list-all`
 
-For a complete list of available tasks, run `task --list-all`.
+### Git Workflow with Git Flow
+
+The `Taskfile.gitflow.yml` provides a structured Git workflow using Git Flow. This helps in managing features, releases, and hotfixes in a standardized way.
+
+> use `task -t Taskfile.gitflow.yml --list-all` to see all gitflow tasks
 
 ## Troubleshooting
 

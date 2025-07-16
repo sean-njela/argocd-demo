@@ -1,11 +1,13 @@
 replicaCount: 3
 
 image:
-  repository: nanajanashia/argocd-app
-  tag: "1.0"
+  repository: devopssean/zta_demo_app
+  tag: "1.0.0"
+
+container:
+  name: argocd-app # must also match the name of the container in the argocd application definition
 
 service:
   type: ClusterIP
   port: 8080
-
-namespace: argocd-demo-ns-with-helm
+  targetPort: 5000

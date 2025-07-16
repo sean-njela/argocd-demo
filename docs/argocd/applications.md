@@ -228,7 +228,7 @@ argocd app delete myapp
 
 ## Related Documentation
 
+- [ArgoCD Documentation](https://argo-cd.readthedocs.io/en/stable/)
 - [ArgoCD Overview](overview.md)
 - [Environment Management](environments.md)
 - [System Architecture](../architecture/overview.md)
-- [Helm Chart Structure](../helm/structure.md)

@@ -35,5 +35,5 @@ This project demonstrates a complete GitOps workflow using ArgoCD to manage Kube
 To get started with this project:
 
 1. Check the [Prerequisites](quickstart/prerequisites.md) for required tools
-2. Follow the [Installation Guide](quickstart/installation.md) to set up the environment
+2. Follow the [Getting Started](quickstart/getting-started.md) to set up the environment
 3. Explore the [Architecture Overview](architecture/overview.md) to understand the system design
