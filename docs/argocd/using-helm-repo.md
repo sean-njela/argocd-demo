@@ -136,10 +136,24 @@ New:
 ```yaml
 spec:
   source:
-    repoURL: http://localhost:8083
+    repoURL: http://chartmuseum.chartmuseum.svc.cluster.local
     targetRevision: 0.1.0
-    chart: myargoapp-chart
+    chart: my-argocd-app
 ```
+!!! tip "Key point"
+    🧠 http://chartmuseum.chartmuseum.svc.cluster.local is a Kubernetes internal DNS name that points to the ChartMuseum service.
+
+    It breaks down like this:
+
+    |Part|Meaning|
+    |---|---|
+    |chartmuseum|The Service name|
+    |chartmuseum (again)|The Namespace where the Service lives|
+    |svc|Short for “Service”|
+    |cluster.local|Default internal DNS domain of the cluster|
+
+    ✅ This format allows other pods (like Argo CD) to access the ChartMuseum service inside the cluster without needing external IPs or port-forwarding.
+
 We then apply the app of apps again. But the code must be pushed first.
 
 To push a new version just change the version in the Chart.yaml file and in the `helm-package-push` task and then run the following command:
@@ -161,8 +175,8 @@ For example, in your Application.yaml (or values in UI), you might have:
 
 ```yaml
 source:
-  repoURL: http://chartmuseum.local
-  chart: myargoapp-chart
+  repoURL: http://chartmuseum.chartmuseum.svc.cluster.local
+  chart: my-argocd-app # chart name in Chart.yaml
   targetRevision: 0.1.0  # 👈 Argo CD will stick to this version
 ```
 Even if you push 0.1.1, Argo CD will stay on 0.1.0 unless told otherwise.
@@ -174,7 +188,7 @@ Even if you push 0.1.1, Argo CD will stay on 0.1.0 unless told otherwise.
 
 ```yaml
 source:
-  chart: myargoapp-chart
+  chart: my-argocd-app
   targetRevision: latest
 ```
 
