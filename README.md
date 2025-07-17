@@ -120,32 +120,33 @@ There are 2 application.yaml files:
 To create the local Kubernetes cluster and deploy Argo CD, simply run:
 
 ```sh
+task ssh-keygen 
+```
+Then copy the private key to the `0-repo-secret.yaml` file for argocd-image-updater. Then copy the public key to the deploy key section in the github repo. Then run the next command. 
+
+```sh
 task dev
 ```
 
 This single command will:
-1.  Create a local Kind cluster (if it's not already running).
-2.  Deploy Argo CD using the Terraform configuration.
-3.  Bootstrap argocd application using 0-application.yaml (this is the application.yaml file with app of apps pattern, TF and helm).
-4.  Expose cluster kubeconfig for tools like lens
-5.  Add argocd helm repo
+1. Create a local Kind cluster (if it's not already running).
+2. Deploy Argo CD using the Terraform configuration.
+3. Bootstrap argocd application using 0-repo-secret.yaml (this is the secret argocd will use to update the image in the github repo).
+4. Bootstrap argocd application using 0-application.yaml (this is the application.yaml file with app of apps pattern, TF and helm).
+5. Expose cluster kubeconfig for tools like lens
+6. Add argocd helm repo
+7. Port forward argocd server UI to localhost:8080 (the password will in the same terminal, just above, just scroll up. Username is admin)
 
-Then in two seperate terminal windows run:
-
-```sh
-task docs # This will serve the docs locally at http://127.0.0.1:8000/argocd-demo/
-```
-
-And
-
-```sh
-task port-forward-argocd # This will forward the Argo CD server UI to localhost:8080
-```
-
-You can now access the Argo CD UI at http://localhost:8080 with username `admin` and for the password run:
+You can now access the Argo CD UI at http://localhost:8080 with username `admin` and for the password run(in a seperate terminal):
 
 ```sh
 task argocd-init-passwd
+```
+
+Then in a seperate terminal window run:
+
+```sh
+task docs # This will serve the docs locally at http://127.0.0.1:8000/argocd-demo/
 ```
 
 Use the following command to clean up the cluster and terraform resources:
