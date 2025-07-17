@@ -142,3 +142,62 @@ spec:
 ```
 We then apply the app of apps again. But the code must be pushed first.
 
+To push a new version just change the version in the Chart.yaml file and in the `helm-package-push` task and then run the following command:
+
+```bash
+task helm-package-push
+```
+
+---
+
+## Argo CD Chart Sync Behavior
+
+❌ By default:
+Argo CD pulls the version defined in your Application manifest.
+
+It does not auto-upgrade when a new version is pushed to ChartMuseum.
+
+For example, in your Application.yaml (or values in UI), you might have:
+
+```yaml
+source:
+  repoURL: http://chartmuseum.local
+  chart: myargoapp-chart
+  targetRevision: 0.1.0  # 👈 Argo CD will stick to this version
+```
+Even if you push 0.1.1, Argo CD will stay on 0.1.0 unless told otherwise.
+
+### Options to Automatically Use the New Version
+
+ 1. Use `targetRevision: latest`
+    This tells Argo CD to always use the newest available chart version:
+
+```yaml
+source:
+  chart: myargoapp-chart
+  targetRevision: latest
+```
+
+!!!warning
+    Be cautious — this means every new chart version will be picked up automatically, which can be risky in production.
+
+ 2. Manually update the version
+    
+    You can:
+
+    - Edit the Application in the Argo CD UI to change targetRevision
+    - Or update your Git manifest and let Argo CD sync it
+
+    This is a manual promotion, which gives you better control.
+
+ 3. Automate via CI/CD
+    Use a script or pipeline step to:
+
+    - Bump Chart.yaml
+    - Push to ChartMuseum
+    - Update your Argo CD Application manifest (targetRevision)
+    - Commit and push to Git
+
+Argo CD sees the Git change and syncs automatically.
+
+For images we already setup argocd-image-updater to automatically update the image tag in the values.yaml file. 
