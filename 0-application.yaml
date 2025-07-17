@@ -9,7 +9,7 @@ metadata:
 spec:
   project: default # project to deploy to
   source:
-    repoURL: https://github.com/sean-njela/argocd-demo.git
+    repoURL: ssh://git@github.com/sean-njela/argocd-demo.git
     targetRevision: main # branch to deploy from (or HEAD for latest commit)
     path: environments/dev/apps # path to the apps folder (app of apps pattern)
   destination:

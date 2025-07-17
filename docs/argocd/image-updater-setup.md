@@ -22,8 +22,22 @@ We will show how to use git repositories in a gitops workflow as well as using h
 
 
 !!!note "The approach is the same when using private docker repos"
-    We will need to provide the image updater with the credentials to access the private repo, because without them the image updater will not be able to update the image tags. (access keys are best practice). We will also need to change the image registry to point to the private one.
-
+    We will need to provide the image updater with the credentials to access the private docker repo, because without them the image updater will not be able to update the image tags. (read only token is best practice). Then run:
+    ```yaml
+    kubectl create secret docker-registry dockerconfigjson -n argocd --docker-server=docker.io/v1/ --docker-username=devopssean --docker-password=<your_read_only_token> --docker-email=sean-njela@yahoo.com
+    ```
+     We must then add the secret to our manifests, and we also need to change the image registry in the manifests to point to the private docker repo. Image updater also needs to be able to access the private docker repo to pull the image. So we create a docker secret(`0-docker-secret.yaml`) in the argocd namespace. We will then need to add the following to the values file in the terraform `0-image-updater.yaml` file:
+    ```yaml
+    config:
+      registries:
+        - name: dockerhub
+          api_url: https://registry-1.docker.io
+          ping: yes
+          credentials: secret:argocd/dockerhub#my-token
+          limit: 20
+          default: true #Or we can use annotations in each application to specify the registry to use.
+    ```
+    Then `tf apply`
 --- 
 
 We replaced the https repoURL with an SSH repoURL in the my-argocd-app0.yaml file as argocd-image-updater will be using a key to access and push the new image to the repo.
