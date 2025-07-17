@@ -136,9 +136,9 @@ New:
 ```yaml
 spec:
   source:
-    repoURL: http://chartmuseum.chartmuseum.svc.cluster.local
+    repoURL: http://chartmuseum.chartmuseum.svc.cluster.local:8080
     targetRevision: 0.1.0
-    chart: my-argocd-app
+    chart: my-argocd-app # chart name in Chart.yaml
 ```
 !!! tip "Key point"
     🧠 http://chartmuseum.chartmuseum.svc.cluster.local is a Kubernetes internal DNS name that points to the ChartMuseum service.
@@ -151,6 +151,7 @@ spec:
     |chartmuseum (again)|The Namespace where the Service lives|
     |svc|Short for “Service”|
     |cluster.local|Default internal DNS domain of the cluster|
+    |8080|Port number (avoids DNS lookup issues when pulling from chartmuseum)|
 
     ✅ This format allows other pods (like Argo CD) to access the ChartMuseum service inside the cluster without needing external IPs or port-forwarding.
 
@@ -188,7 +189,7 @@ Even if you push 0.1.1, Argo CD will stay on 0.1.0 unless told otherwise.
 
 ```yaml
 source:
-  chart: my-argocd-app
+  chart: my-argocd-app  # chart name in Chart.yaml
   targetRevision: latest
 ```
 
