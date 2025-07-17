@@ -127,9 +127,9 @@ You can also add other annotations to fine-tune the behavior:
 
 ```yaml
 annotations:
-  argocd-image-updater.argoproj.io/image-list: argocd-app=devopssean/zta_demo_app
+  argocd-image-updater.argoproj.io/image-list: argocd-app=docker.io/devopssean/zta_demo_app
   argocd-image-updater.argoproj.io/argocd-app.update-strategy: semver
-  argocd-image-updater.argoproj.io/argocd-app.allow-tags: ">=1.0.0,<2.0.0"
+  argocd-image-updater.argoproj.io/argocd-app.allow-tags: ^1
   argocd-image-updater.argoproj.io/write-back-method: git
 ```
 
@@ -144,7 +144,7 @@ Tells Argo CD Image Updater to track the image nanajanashia/argocd-app and assoc
 `update-strategy: semver`:
 Instructs the updater to sort and evaluate available tags using semantic versioning rules (e.g., 1.0.1 < 1.0.2 < 1.1.0).
 
-`allow-tags: ">=1.0.0,<2.0.0` Allows only tags that:
+`allow-tags: ^1` Allows only tags that:
 
 - Are greater than or equal to 1.0.0
 - Are less than 2.0.0
@@ -186,9 +186,9 @@ These are required when you're not using inline Helm parameters:.
 Final Correct Version (when using a values file):
 ```yaml
 annotations:
-  argocd-image-updater.argoproj.io/image-list: argocd-app=devopssean/zta_demo_app
+  argocd-image-updater.argoproj.io/image-list: argocd-app=docker.io/devopssean/zta_demo_app
   argocd-image-updater.argoproj.io/argocd-app.update-strategy: semver
-  argocd-image-updater.argoproj.io/argocd-app.allow-tags: ">=1.0.0,<2.0.0"
+  argocd-image-updater.argoproj.io/argocd-app.allow-tags: ^1
   argocd-image-updater.argoproj.io/argocd-app.helm-image-tag-spec: image.tag
   argocd-image-updater.argoproj.io/argocd-app.helm-image-name-spec: image.repository
   argocd-image-updater.argoproj.io/write-back-method: git
@@ -201,7 +201,7 @@ And your values.yaml should look like:
 
 ```yaml
 image:
-  repository: devopssean/zta_demo_app
+  repository: docker.io/devopssean/zta_demo_app
   tag: "1.0.0"
 ```
 
