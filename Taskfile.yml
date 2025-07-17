@@ -6,7 +6,9 @@ tasks:
       - task --list-all
 
 
-# -------------- System Management -------------- 07/15/2025 ---------------- #
+# # # # # # # ---------- # # # # # # # ---------- # # # # # # # 
+# System Management 
+# # # # # # # ---------- # # # # # # # ---------- # # # # # # # 
 
   ports:
     desc: "This is a command to list ports in use"
@@ -14,14 +16,18 @@ tasks:
       - ss -tunl
 
 
-# -------------- Docs -------------- 07/15/2025 ---------------- #
+# # # # # # # ---------- # # # # # # # ---------- # # # # # # # 
+# Docs 
+# # # # # # # ---------- # # # # # # # ---------- # # # # # # # 
 
   docs:
     desc: "🌐 Serve docs locally -> http://127.0.0.1:8000/argocd-demo/"
     cmds:
       - poetry run mkdocs serve --clean
 
-# -------------- Cluster Management -------------- 07/15/2025 ---------------- #
+# # # # # # # ---------- # # # # # # # ---------- # # # # # # # 
+# Cluster Management 
+# # # # # # # ---------- # # # # # # # ---------- # # # # # # # 
 
   dev:
     desc: "Spin up teh complete dev cluster"
@@ -30,9 +36,11 @@ tasks:
       - task: tf-apply
       - task: bootstrap-sealed-secret
       - task: bootstrap-app0
-      - task: argocd-init-passwd
       - task: expose-kubeconfig
-      - task: helm-add-argocd
+      - task: helm-add-all
+      - task: argocd-init-passwd
+      - task: port-fwd-argocd
+      - task: port-fwd-chartmuseum
       - echo "Done"
   
 
@@ -50,23 +58,6 @@ tasks:
       - kubectx kind-argocd-demo
       - cat ~/.kube/config > config-kind-dev.txt
       - echo "Copy config-kind-dev.txt into lens to view your cluster"
-
-  tf-apply: # any resource mentioned in tf files will be installed
-    desc: "Install or update Argo CD resources using Terraform"
-    dir: terraform
-    deps:
-      - create-cluster
-      - tf-lint
-    cmds:
-      - kubectx kind-argocd-demo
-      - terraform init
-      - terraform apply -auto-approve
-
-  port-forward-argocd:
-    desc: "Forward the Argo CD server UI to localhost:8080"
-    cmds:
-      - kubectx kind-argocd-demo
-      - kubectl port-forward svc/argocd-server -n argocd 8080:443
 
   argocd-init-passwd:
     desc: "This is a command to initialize argocd password. Use admin as username"
@@ -96,16 +87,26 @@ tasks:
       - kubectx kind-argocd-demo
       - terraform destroy -auto-approve
       - kind delete cluster -n argocd-demo
+      - task: del-ssh-key
 
-# -------------- Image Updater -------------- 07/14/2025 ---------------- #
+# # # # # # # ---------- # # # # # # # ---------- # # # # # # # 
+# Helm 
+# # # # # # # ---------- # # # # # # # ---------- # # # # # # # 
 
-  helm-add-argocd: # we need this to access the image updater chart
-    desc: "Add argocd helm repo (image updater chart lives here)"
+  helm-add-all:
+    desc: "Add all helm repos"
     cmds:
       - kubectx kind-argocd-demo
-      - kubens argocd
       - helm repo add argocd https://argoproj.github.io/argo-helm
+      - helm repo add chartmuseum https://chartmuseum.github.io/charts
+      - helm repo add argocd-image-updater https://argocd-image-updater.github.io/argocd-image-updater
       - helm repo update
+
+  helm-package-push:
+    desc: "Package and push helm chart to chartmuseum"
+    cmds:
+      - helm package environments/dev/helm/myargoapp-chart -d ./packaged-charts/
+      - curl --data-binary @"./packaged-charts/my-argocd-app-0.1.0.tgz" http://localhost:8083/api/charts
 
   helm-dry-run:
     desc: "Dry run helm chart to check if it will install successfully"
@@ -114,12 +115,33 @@ tasks:
       - kubens argocd
       - helm install myargoapp-chart environments/dev/helm/myargoapp-chart --values environments/dev/helm/myargoapp-chart/values.yaml --dry-run --debug
 
+
+# # # # # # # ---------- # # # # # # # ---------- # # # # # # # 
+# Terraform 
+# # # # # # # ---------- # # # # # # # ---------- # # # # # # # 
+
   tf-lint:
     desc: "Makes sure tf files arecorrectly formatted before running tf commands"
     dir: terraform
     cmds:
       - terraform validate
-      - terraform fmt -check
+      - terraform fmt
+
+  tf-apply: # any resource mentioned in tf files will be installed
+    desc: "Install or update Argo CD resources using Terraform"
+    dir: terraform
+    deps:
+      - create-cluster
+      - tf-lint
+    cmds:
+      - kubectx kind-argocd-demo
+      - terraform init
+      - terraform apply -auto-approve
+
+# # # # # # # ---------- # # # # # # # ---------- # # # # # # # 
+# SSH 
+# # # # # # # ---------- # # # # # # # ---------- # # # # # # # 
+
 
   ssh-keygen:
     desc: "Generate ssh key for argocd-image-updater"
@@ -132,5 +154,34 @@ tasks:
       - rm ~/.ssh/argocd_image_updater_ed25519
       - rm ~/.ssh/argocd_image_updater_ed25519.pub
 
+# # # # # # # ---------- # # # # # # # ---------- # # # # # # # 
+# Docker 
+# # # # # # # ---------- # # # # # # # ---------- # # # # # # # 
 
-  
+  docker-push:
+    desc: "Tag and push docker image -> task docker-tag-push version=\"1.2.0\""
+    requires:
+      vars:
+        - version
+    cmds:
+      - docker login
+      - docker tag devopssean/zta_demo_app:dev devopssean/zta_demo_app:{{.version}}
+      - docker push devopssean/zta_demo_app:{{.version}}
+
+
+# # # # # # # ---------- # # # # # # # ---------- # # # # # # # 
+# Port Forward 
+# # # # # # # ---------- # # # # # # # ---------- # # # # # # # 
+
+  port-fwd-argocd:
+    desc: "Forward the Argo CD server UI to localhost:8080"
+    cmds:
+      - kubectx kind-argocd-demo
+      - kubectl port-forward svc/argocd-server -n argocd 8080:443
+
+  port-fwd-chartmuseum:
+    desc: "Forward the Chartmuseum server UI to localhost:8083"
+    cmds:
+      - kubectx kind-argocd-demo
+      - kubens chartmuseum
+      - kubectl port-forward svc/chartmuseum 8083:8080

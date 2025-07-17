@@ -7,41 +7,139 @@ repo_name: sean-njela/argocd-demo/
 edit_uri: edit/main/docs/
 copyright: Copyright &copy; 2024 Sean Njela - Personal Portfolio Project
 
+# Configuration
 theme:
   name: material
   language: en
   favicon: assets/images/argocd.png
   logo: assets/images/argocd.png
   features:
-    - navigation.sections
-    - navigation.top
-    - navigation.expand
-    - navigation.path
-    - navigation.indexes
-    - toc.integrate
-    - toc.follow
-    - content.code.copy
-    - content.code.annotate
+    - announce.dismiss
     - content.action.edit
     - content.action.view
-    - search.suggest
+    - content.code.annotate
+    - content.code.copy
+    # - content.code.select
+    # - content.footnote.tooltips
+    # - content.tabs.link
+    - content.tooltips
+    # - header.autohide
+    # - navigation.expand
+    - navigation.footer
+    - navigation.indexes
+    # - navigation.instant
+    # - navigation.instant.prefetch
+    # - navigation.instant.progress
+    # - navigation.prune
+    - navigation.sections
+    - navigation.tabs
+    # - navigation.tabs.sticky
+    - navigation.top
+    - navigation.tracking
     - search.highlight
     - search.share
+    - search.suggest
+    - toc.follow
+    # - toc.integrate
   palette:
-    - media: "(prefers-color-scheme: dark)"
-      scheme: slate
-      primary: blue
-      accent: light blue
+    - media: "(prefers-color-scheme)"
       toggle:
-        icon: material/weather-sunny
+        icon: material/link
         name: Switch to light mode
     - media: "(prefers-color-scheme: light)"
       scheme: default
-      primary: blue
-      accent: light blue
+      primary: indigo
+      accent: indigo
       toggle:
-        icon: material/weather-night
+        icon: material/toggle-switch
         name: Switch to dark mode
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: black
+      accent: indigo
+      toggle:
+        icon: material/toggle-switch-off
+        name: Switch to system preference
+  font:
+    text: Roboto
+    code: Roboto Mono
+  icon:
+    logo: logo
+
+plugins:
+  - search:
+      lang: en
+      separator: '[\s\u200b\-_,:!=\[\]()"`/]+|\.(?!\d)|&[lg]t;|(?!\b)(?=[A-Z][a-z])'
+  - minify:
+      minify_html: true
+  - mike:
+      alias_type: redirect   # options: symlink (default), redirect, copy
+      version_selector: true
+
+# Extensions
+markdown_extensions:
+  - abbr
+  - admonition
+  - attr_list
+  - def_list
+  - footnotes
+  - md_in_html
+  - toc:
+      permalink: true
+  - pymdownx.arithmatex:
+      generic: true
+  - pymdownx.betterem:
+      smart_enable: all
+  - pymdownx.caret
+  - pymdownx.details
+  - pymdownx.emoji:
+      emoji_generator: !!python/name:material.extensions.emoji.to_svg
+      emoji_index: !!python/name:material.extensions.emoji.twemoji
+  - pymdownx.highlight:
+      anchor_linenums: true
+      line_spans: __span
+      pygments_lang_class: true
+  - pymdownx.inlinehilite
+  - pymdownx.keys
+  - pymdownx.magiclink:
+      normalize_issue_symbols: true
+      repo_url_shorthand: true
+      user: squidfunk
+      repo: mkdocs-material
+  - pymdownx.mark
+  - pymdownx.smartsymbols
+  - pymdownx.snippets:
+      auto_append:
+        - includes/mkdocs.md
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
+  - pymdownx.tabbed:
+      alternate_style: true
+      combine_header_slug: true
+      slugify: !!python/object/apply:pymdownx.slugs.slugify
+        kwds:
+          case: lower
+  - pymdownx.tasklist:
+      custom_checkbox: true
+  - pymdownx.tilde
+
+extra:
+  social:
+    - icon: fontawesome/brands/github
+      link: https://github.com/sean-njela
+    - icon: fontawesome/brands/linkedin
+      link: https://linkedin.com/in/sean-njela
+  generator: false
+  version:
+    provider: mike
+    alias: true
+    default: latest
+  status:
+    new: Recently added
+    deprecated: Deprecated
 
 nav:
   - Home: 
@@ -60,60 +158,6 @@ nav:
       - Environment Management: argocd/environments.md
       - Argo CD Image Updater: argocd/image-updater.md
       - Argo CD Image Updater Setup: argocd/image-updater-setup.md
+      - Pulling from a helm repo: argocd/using-helm-repo.md
   - Automation:
       - Task Runner: automation/taskfile.md
-extra:
-  social:
-    - icon: fontawesome/brands/github
-      link: https://github.com/sean-njela
-    - icon: fontawesome/brands/linkedin
-      link: https://linkedin.com/in/sean-njela
-  generator: false
-  version:
-    provider: mike
-    alias: true
-    default: latest
-    
-
-plugins:
-  - search:
-      lang: en
-  - mike:
-      alias_type: redirect   # options: symlink (default), redirect, copy
-      version_selector: true
-  # - mermaid2:
-  #     arguments:
-  #       startOnLoad: true
-  #       theme: default
-  #     javascript: https://unpkg.com/mermaid@10.4.0/dist/mermaid.min.js
-
-markdown_extensions:
-  - pymdownx.superfences
-  - pymdownx.superfences:
-      custom_fences:
-        - name: mermaid
-          class: mermaid
-          format: !!python/name:pymdownx.superfences.fence_code_format #this will flag in VSCode but ignore
-  - pymdownx.highlight:
-      anchor_linenums: true
-      line_spans: __span
-      pygments_lang_class: true
-  - pymdownx.tabbed:
-      alternate_style: true
-  - admonition
-  - pymdownx.details
-  - pymdownx.inlinehilite
-  - pymdownx.snippets
-  - attr_list
-  - md_in_html
-  - tables
-  - toc:
-      permalink: true
-      toc_depth: 3
-  - pymdownx.keys
-  - pymdownx.mark
-  - pymdownx.smartsymbols
-  - pymdownx.tasklist:
-      custom_checkbox: true
-  - def_list
-  - footnotes

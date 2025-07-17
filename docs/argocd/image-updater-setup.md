@@ -22,20 +22,20 @@ We will show how to use git repositories in a gitops workflow as well as using h
 
 
 !!!note "The approach is the same when using private docker repos"
-    We will need to provide the image updater with the credentials to access the private docker repo, because without them the image updater will not be able to update the image tags. (read only token is best practice). Then run:
+    We will need to provide the deployment with the credentials to access the private docker repo, because without it will not be able to pull the image. (read only token is best practice). Then run:
     ```yaml
     kubectl create secret docker-registry dockerconfigjson -n argocd --docker-server=docker.io/v1/ --docker-username=devopssean --docker-password=<your_read_only_token> --docker-email=sean-njela@yahoo.com
     ```
-     We must then add the secret to our manifests, and we also need to change the image registry in the manifests to point to the private docker repo. Image updater also needs to be able to access the private docker repo to pull the image. So we create a docker secret(`0-docker-secret.yaml`) in the argocd namespace. We will then need to add the following to the values file in the terraform `0-image-updater.yaml` file:
+    The updater also needs to access the private repo. So we add the secret name (name: dockerconfigjson) to our deployment manifest (under spec-template-spec-ImagePullSecrets), and we also need to change the image registry in the manifests to point to the private docker repo. ArgoCD Image updater supports multiple registries. So we create and apply a docker secret for our token(`0-docker-secret.yaml`) in the argocd namespace. We will then need to add the following to the values file in the terraform `0-image-updater.yaml` file:
     ```yaml
     config:
       registries:
         - name: dockerhub
           api_url: https://registry-1.docker.io
           ping: yes
-          credentials: secret:argocd/dockerhub#my-token
-          limit: 20
-          default: true #Or we can use annotations in each application to specify the registry to use.
+          credentials: secret:argocd/dockerhub-token#my-token
+          limit: 20 # Rate limit
+          default: true # Or we can use annotations in each application to specify the registry to use.
     ```
     Then `tf apply`
 --- 
@@ -208,3 +208,4 @@ In the first instance we used a k8s secret manifest with the ssh private key to 
 
 The secret should be applied first before bootstrapping argocd.
 
+---
