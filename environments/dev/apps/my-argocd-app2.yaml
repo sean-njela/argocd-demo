@@ -15,9 +15,9 @@ metadata:
 spec:
   project: default # project to deploy to
   source:
-    repoURL: http://localhost:8083
+    repoURL: http://chartmuseum.chartmuseum.svc.cluster.local
     targetRevision: 0.2.0 
-    chart: my-argocd-app # path to the helm chart (app0)
+    chart: my-argocd-app # chart name in Chart.yaml
   destination:
     server: https://kubernetes.default.svc # kubernetes server
     namespace: argocd-demo-ns-with-chart # namespace to deploy to 
