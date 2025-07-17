@@ -15,7 +15,7 @@ metadata:
 spec:
   project: default # project to deploy to
   source:
-    repoURL: http://chartmuseum.chartmuseum.svc.cluster.local
+    repoURL: http://chartmuseum.chartmuseum.svc.cluster.local:8080
     targetRevision: 0.2.0 
     chart: my-argocd-app # chart name in Chart.yaml
   destination:
