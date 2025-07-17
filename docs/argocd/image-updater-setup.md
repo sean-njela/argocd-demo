@@ -86,8 +86,7 @@ Then you would configure Argo CD Image Updater like this:
 
 ```yaml
 annotations:
-  argocd-image-updater.argoproj.io/image-list: myapp=myregistry.io/myapp
-  argocd-image-updater.argoproj.io/myapp.allow-tags: ~v0.4
+  argocd-image-updater.argoproj.io/image-list: myapp=myregistry.io/myapp:~1.0
 ```
 
 Here’s what happens:
@@ -121,15 +120,14 @@ In our case:
 
 ```yaml
 annotations:
-    argocd-image-updater.argoproj.io/image-list: argocd-app=devopssean/zta_demo_app
+    argocd-image-updater.argoproj.io/image-list: argocd-app=docker.io/devopssean/zta_demo_app:1.x
 ```
 You can also add other annotations to fine-tune the behavior:
 
 ```yaml
 annotations:
-  argocd-image-updater.argoproj.io/image-list: argocd-app=docker.io/devopssean/zta_demo_app
+  argocd-image-updater.argoproj.io/image-list: argocd-app=docker.io/devopssean/zta_demo_app:1.x
   argocd-image-updater.argoproj.io/argocd-app.update-strategy: semver
-  argocd-image-updater.argoproj.io/argocd-app.allow-tags: ^1
   argocd-image-updater.argoproj.io/write-back-method: git
 ```
 
@@ -186,9 +184,8 @@ These are required when you're not using inline Helm parameters:.
 Final Correct Version (when using a values file):
 ```yaml
 annotations:
-  argocd-image-updater.argoproj.io/image-list: argocd-app=docker.io/devopssean/zta_demo_app
+  argocd-image-updater.argoproj.io/image-list: argocd-app=docker.io/devopssean/zta_demo_app:1.x
   argocd-image-updater.argoproj.io/argocd-app.update-strategy: semver
-  argocd-image-updater.argoproj.io/argocd-app.allow-tags: ^1
   argocd-image-updater.argoproj.io/argocd-app.helm-image-tag-spec: image.tag
   argocd-image-updater.argoproj.io/argocd-app.helm-image-name-spec: image.repository
   argocd-image-updater.argoproj.io/write-back-method: git
