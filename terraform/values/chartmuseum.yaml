@@ -1,0 +1,8 @@
+---
+#First and foremost, we will enable teh api to allow us to push charts to the chartmuseum instance
+env:
+  open:
+    DISABLE_API: false 
+
+persistence: # chart museum has many options for persistence and encryption. We will disable it for now
+  enabled: false 

@@ -68,6 +68,9 @@ tasks:
         git pull --ff-only origin {{.DEV_BRANCH}} || (echo "❌ Cannot fast-forward develop. Resolve manually." && exit 1)
         git checkout -
         git merge --no-ff {{.DEV_BRANCH}} -m "Sync with develop $(date -u +%Y-%m-%dT%H:%M:%SZ)"
+        git checkout {{.MAIN_BRANCH}}
+        git pull origin {{.MAIN_BRANCH}} || (echo "❌ Pull failed. Resolve diverged main." && exit 1)
+        git checkout -
         echo "✅ Synced with develop."
 
   feature:start:

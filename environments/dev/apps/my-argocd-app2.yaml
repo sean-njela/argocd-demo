@@ -9,19 +9,18 @@ metadata:
     argocd-image-updater.argoproj.io/argocd-app.update-strategy: semver
     argocd-image-updater.argoproj.io/argocd-app.helm-image-tag-spec: image.tag
     argocd-image-updater.argoproj.io/argocd-app.helm-image-name-spec: image.repository
-    argocd-image-updater.argoproj.io/write-back-method: git
   finalizers:
     - resources-finalizer.argocd.argoproj.io/foreground # this will make argocd delete the resources when the app is deleted
 
 spec:
   project: default # project to deploy to
   source:
-    repoURL: ssh://git@github.com/sean-njela/argocd-demo.git
-    targetRevision: main # branch to deploy from (or HEAD for latest commit)
-    path: environments/dev/helm/myargoapp-chart # path to the helm chart (app0)
+    repoURL: http://localhost:8083
+    targetRevision: 0.1.0 
+    chart: my-argocd-app # path to the helm chart (app0)
   destination:
     server: https://kubernetes.default.svc # kubernetes server
-    namespace: argocd-demo-ns-with-helm # namespace to deploy to
+    namespace: argocd-demo-ns-with-chart # namespace to deploy to 
     helm:
       valueFiles:
         - values.yaml
