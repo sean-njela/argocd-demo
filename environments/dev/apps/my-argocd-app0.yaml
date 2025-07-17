@@ -5,9 +5,8 @@ metadata:
   name: my-argocd-app-with-helm  # name of the app
   namespace: argocd # namespace of the app
   annotations:
-    argocd-image-updater.argoproj.io/image-list: argocd-app=docker.io/devopssean/zta_demo_app
+    argocd-image-updater.argoproj.io/image-list: argocd-app=docker.io/devopssean/zta_demo_app:1.x
     argocd-image-updater.argoproj.io/argocd-app.update-strategy: semver
-    argocd-image-updater.argoproj.io/argocd-app.allow-tags: ^1
     argocd-image-updater.argoproj.io/argocd-app.helm-image-tag-spec: image.tag
     argocd-image-updater.argoproj.io/argocd-app.helm-image-name-spec: image.repository
     argocd-image-updater.argoproj.io/write-back-method: git
