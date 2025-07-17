@@ -2,7 +2,7 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: my-argocd-app-with-helm  # name of the app
+  name: my-argocd-app-with-chart  # name of the app
   namespace: argocd # namespace of the app
   annotations:
     argocd-image-updater.argoproj.io/image-list: argocd-app=docker.io/devopssean/zta_demo_app:1.x
@@ -16,7 +16,7 @@ spec:
   project: default # project to deploy to
   source:
     repoURL: http://localhost:8083
-    targetRevision: 0.1.0 
+    targetRevision: 0.2.0 
     chart: my-argocd-app # path to the helm chart (app0)
   destination:
     server: https://kubernetes.default.svc # kubernetes server

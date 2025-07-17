@@ -106,7 +106,7 @@ tasks:
     desc: "Package and push helm chart to chartmuseum"
     cmds:
       - helm package environments/dev/helm/myargoapp-chart -d ./packaged-charts/
-      - curl --data-binary @"./packaged-charts/my-argocd-app-0.1.0.tgz" http://localhost:8083/api/charts
+      - curl --data-binary @"./packaged-charts/my-argocd-app-0.2.0.tgz" http://localhost:8083/api/charts
 
   helm-dry-run:
     desc: "Dry run helm chart to check if it will install successfully"
