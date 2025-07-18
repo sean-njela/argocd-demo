@@ -1,7 +1,7 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: my-argocd-app2 # name of the app
+  name: my-argocd-app3 # name of the app
   namespace: argocd # namespace of the app
   finalizers:
     - resources-finalizer.argocd.argoproj.io/foreground # this will make argocd delete the resources when the app is deleted
@@ -11,7 +11,7 @@ spec:
   source:
     repoURL: ssh://git@github.com/sean-njela/argocd-demo.git
     targetRevision: main # branch to deploy from (or HEAD for latest commit)
-    path: environments/qa/apps # path to the apps folder (app of apps pattern)
+    path: environments/prod/apps # path to the apps folder (app of apps pattern)
   destination:
     server: https://kubernetes.default.svc # kubernetes server
     # no namespace specified for root app in app of apps pattern

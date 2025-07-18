@@ -63,3 +63,11 @@ docker push 699475925123.dkr.ecr.eu-north-1.amazonaws.com/devopssean/zta_demo_ap
 docker tag devopssean/zta_demo_app:dev 699475925123.dkr.ecr.eu-north-1.amazonaws.com/devopssean/zta_demo_app2:2.5.0
 docker push 699475925123.dkr.ecr.eu-north-1.amazonaws.com/devopssean/zta_demo_app2:2.5.0
  ```
+
+
+ ## Applying apps
+
+ There are two apps to apply qa `argocd/2-application.yaml` and prod `argocd/3-application.yaml`. After updating an image the `3-application.yaml` will not auto update as there is no annotation for that. So we test the qa first then if satisfied we push to prod.
+
+
+ ## Freezing script
