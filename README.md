@@ -122,7 +122,7 @@ To create the local Kubernetes cluster and deploy Argo CD, simply run:
 ```sh
 task ssh-keygen 
 ```
-Then copy the private key to the `0-repo-secret.yaml` file for argocd-image-updater. Then copy the public key to the deploy key section in the github repo. Then run the next command. 
+Then copy the private key to the `0-repo-secret.yaml` file for argocd-image-updater. Then copy the public key to the deploy key section in the github repo. Also make sure to add the slack token to the `0-notifications-secret.yaml` file. Then run the next command. 
 
 ```sh
 task dev
@@ -189,9 +189,9 @@ The `environments/dev/helm` directory contains Helm charts for the same applicat
 * [x] Helm chart integration
 * [x] App of apps pattern
 * [x] Comprehensive documentation
-* [ ] ArgoCD Image Updater
+* [x] ArgoCD Image Updater
 * [ ] Deployment freezing
-* [ ] Notification system
+* [x] Notification system
 
 ## NOTES
 - The `1-application.yaml` file is the same as the `0-application.yaml` it is the file we used initially before we added the app of apps pattern, tf and helm

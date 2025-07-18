@@ -9,6 +9,18 @@ data:
     argocdUrl: http://localhost:8080 
   service.slack: | # from secret we created
     token: $slack-token
+  subscriptions: |
+    - recipients:
+      - slack:alerts
+      triggers:
+      - on-deployed
+      - on-health-degraded
+      - on-sync-failed
+      - on-sync-succeeded
+  notifiers: |
+    slack:
+      alerts:
+        channel: '#argocd-notifications'
   template.app-created: |
     email:
       subject: Application {{.app.metadata.name}} has been created.
