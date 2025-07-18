@@ -10,5 +10,7 @@ resource "helm_release" "chartmuseum" {
   version          = "3.9.3"
   namespace        = "chartmuseum"
   create_namespace = true
+  timeout          = 600
+  replace          = true
   values           = [file("values/chartmuseum.yaml")]
 }

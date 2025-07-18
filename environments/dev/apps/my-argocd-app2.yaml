@@ -9,6 +9,8 @@ metadata:
     argocd-image-updater.argoproj.io/argocd-app.update-strategy: semver
     argocd-image-updater.argoproj.io/argocd-app.helm-image-tag-spec: image.tag
     argocd-image-updater.argoproj.io/argocd-app.helm-image-name-spec: image.repository
+    notifications.argoproj.io/subscribe.on-deployed.slack: alerts 
+    notifications.argoproj.io/subscribe.on-sync-failed.slack: alerts 
   finalizers:
     - resources-finalizer.argocd.argoproj.io/foreground # this will make argocd delete the resources when the app is deleted
 
