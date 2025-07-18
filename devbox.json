@@ -16,7 +16,8 @@
     "kubectx@0.9",
     "argocd@2.14",
     "terraform@1.12",
-    "poetry@2.1"
+    "poetry@2.1",
+    "kubeseal@0.30"
   ],
   "shell": {
     "init_hook": [

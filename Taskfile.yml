@@ -34,13 +34,12 @@ tasks:
     cmds:
       - task: create-cluster
       - task: tf-apply
+      - task: helm-package-push
       - task: bootstrap-sealed-secret
       - task: bootstrap-app0
       - task: expose-kubeconfig
-      - task: helm-add-all
       - task: argocd-init-passwd
       - task: port-fwd-argocd
-      - task: port-fwd-chartmuseum
       - echo "Done"
   
 
@@ -68,10 +67,11 @@ tasks:
 
   bootstrap-sealed-secret:
     desc: "Bootstrap sealed image updater secret"
+    deps: [kubeseal]
     cmds:
       - kubectx kind-argocd-demo
       - kubens argocd
-      - kubectl apply -f 0-repo-secret.yaml
+      - kubectl apply -f 1-sealed-repo-secret.yaml
 
   bootstrap-app0:
     desc: "Bootstrap argocd application using app0"
@@ -84,10 +84,10 @@ tasks:
     desc: "Deletes the terraform resources and the kind cluster"
     dir: terraform
     cmds:
-      - kubectx kind-argocd-demo
-      - terraform destroy -auto-approve
-      - kind delete cluster -n argocd-demo
-      - task: del-ssh-key
+      - kubectx kind-argocd-demo || echo "Kind cluster not found"
+      - terraform destroy -auto-approve || echo "Terraform resources not found"
+      - kind delete cluster -n argocd-demo || echo "Kind cluster not found"
+      - task: del-ssh-key || echo "SSH key not found"
 
 # # # # # # # ---------- # # # # # # # ---------- # # # # # # # 
 # Helm 
@@ -100,6 +100,7 @@ tasks:
       - helm repo add argocd https://argoproj.github.io/argo-helm
       - helm repo add chartmuseum https://chartmuseum.github.io/charts
       - helm repo add argocd-image-updater https://argocd-image-updater.github.io/argocd-image-updater
+      - helm repo add bitnami-sealed-secrets https://charts.bitnami.com/bitnami
       - helm repo update
 
   helm-package-push:
@@ -185,3 +186,15 @@ tasks:
       - kubectx kind-argocd-demo
       - kubens chartmuseum
       - kubectl port-forward svc/chartmuseum 8083:8080
+
+
+# # # # # # # ---------- # # # # # # # ---------- # # # # # # # 
+# Kubeseal 
+# # # # # # # ---------- # # # # # # # ---------- # # # # # # # 
+
+  kubeseal:
+    desc: "Encrypt a secret using kubeseal"
+    cmds:
+      - kubectx kind-argocd-demo
+      - kubens argocd
+      - kubeseal --controller-name sealed-secrets -o yaml -n kube-system < 0-repo-secret.yaml > 1-sealed-repo-secret.yaml
