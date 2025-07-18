@@ -75,39 +75,45 @@ tasks:
     cmds:
       - kubectx kind-argocd-demo
       - kubens argocd
-      - kubectl apply -f 1-sealed-repo-secret.yaml
+      - kubectl apply -f argocd/1-sealed-repo-secret.yaml
 
   bootstrap-notifications-secret:
     desc: "Bootstrap argocd notifications secret"
     cmds:
       - kubectx kind-argocd-demo
-      - kubens argocd
-      - kubectl apply -f 1-sealed-notifications-secret.yaml
+      - kubens argocd 
+      - kubectl apply -f argocd/1-sealed-notifications-secret.yaml
 
   bootstrap-notifications-cm:
     desc: "Bootstrap argocd notifications configmap"
     cmds:
       - kubectx kind-argocd-demo
       - kubens argocd
-      - kubectl apply -f 0-notifications-cm.yaml
+      - kubectl apply -f argocd/0-notifications-cm.yaml
 
   bootstrap-app0:
     desc: "Bootstrap argocd application using app0"
     cmds:
       - kubectx kind-argocd-demo
       - kubens argocd
-      - kubectl apply -f 0-application.yaml
+      - kubectl apply -f argocd/0-application.yaml
 
 # # # # # # # ---------- # # # # # # # ---------- # # # # # # # 
 # Cleanup
 # # # # # # # ---------- # # # # # # # ---------- # # # # # # # 
 
-  cleanup:
-    desc: "Deletes the terraform resources and the kind cluster"
-    dir: terraform
+  cleanup-dev:
+    desc: "Deletes the terraform resources and the dev kind cluster"
+    dir: terraform/environments/dev
     cmds:
       - terraform destroy -auto-approve 
       - kind delete cluster -n argocd-demo 
+
+  cleanup-prod:
+    desc: "Deletes the terraform resources and the prod kind cluster"
+    dir: terraform/environments/prod
+    cmds:
+      - terraform destroy -auto-approve 
 
 # # # # # # # ---------- # # # # # # # ---------- # # # # # # # 
 # Helm 
@@ -141,21 +147,17 @@ tasks:
 # Terraform 
 # # # # # # # ---------- # # # # # # # ---------- # # # # # # # 
 
-  tf-lint:
-    desc: "Makes sure tf files arecorrectly formatted before running tf commands"
-    dir: terraform
-    cmds:
-      - terraform validate
-      - terraform fmt
-
-  tf-apply: # any resource mentioned in tf files will be installed
+  tf-apply-dev: # any resource mentioned in tf files will be installed
     desc: "Install or update Argo CD resources using Terraform"
-    dir: terraform
-    deps:
-      - create-cluster
-      - tf-lint
+    dir: terraform/environments/dev
     cmds:
-      - kubectx kind-argocd-demo
+      - terraform init
+      - terraform apply -auto-approve
+
+  tf-apply-prod: # any resource mentioned in tf files will be installed
+    desc: "Install or update Argo CD resources using Terraform for prod env"
+    dir: terraform/environments/prod
+    cmds:
       - terraform init
       - terraform apply -auto-approve
 
@@ -217,5 +219,5 @@ tasks:
     cmds:
       - kubectx kind-argocd-demo
       - kubens argocd
-      - kubeseal --controller-name sealed-secrets -o yaml -n kube-system < 0-repo-secret.yaml > 1-sealed-repo-secret.yaml
-      - kubeseal --controller-name sealed-secrets -o yaml -n argocd < 0-notifications-secret.yaml > 1-sealed-notifications-secret.yaml
+      - kubeseal --controller-name sealed-secrets -o yaml -n kube-system < argocd/0-repo-secret.yaml > argocd/1-sealed-repo-secret.yaml
+      - kubeseal --controller-name sealed-secrets -o yaml -n argocd < argocd/0-notifications-secret.yaml > argocd/1-sealed-notifications-secret.yaml

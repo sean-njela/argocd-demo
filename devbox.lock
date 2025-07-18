@@ -49,6 +49,70 @@
         }
       }
     },
+    "awscli@1.40": {
+      "last_modified": "2025-07-13T22:45:35Z",
+      "resolved": "github:NixOS/nixpkgs/a421ac6595024edcfbb1ef950a3712b89161c359#awscli",
+      "source": "devbox-search",
+      "version": "1.40.31",
+      "systems": {
+        "aarch64-darwin": {
+          "outputs": [
+            {
+              "name": "out",
+              "path": "/nix/store/q0jbihfdc89wfrsxygfx4gmnjm6n4la1-awscli-1.40.31",
+              "default": true
+            },
+            {
+              "name": "dist",
+              "path": "/nix/store/v3qsy6iwk2ypxm56j052l9c3xkmgrb17-awscli-1.40.31-dist"
+            }
+          ],
+          "store_path": "/nix/store/q0jbihfdc89wfrsxygfx4gmnjm6n4la1-awscli-1.40.31"
+        },
+        "aarch64-linux": {
+          "outputs": [
+            {
+              "name": "out",
+              "path": "/nix/store/6d4c4j15s0jxz011arhl3ckjk8lfz3fr-awscli-1.40.31",
+              "default": true
+            },
+            {
+              "name": "dist",
+              "path": "/nix/store/wn4m5nbdx4xdcc6hpisamjmzy7262bfq-awscli-1.40.31-dist"
+            }
+          ],
+          "store_path": "/nix/store/6d4c4j15s0jxz011arhl3ckjk8lfz3fr-awscli-1.40.31"
+        },
+        "x86_64-darwin": {
+          "outputs": [
+            {
+              "name": "out",
+              "path": "/nix/store/x7yzw4p4ajgg9fp3gwrs7ag5k4p3mj8h-awscli-1.40.31",
+              "default": true
+            },
+            {
+              "name": "dist",
+              "path": "/nix/store/3ynmh9hv3yx38366wb8c4ipldflhpxsx-awscli-1.40.31-dist"
+            }
+          ],
+          "store_path": "/nix/store/x7yzw4p4ajgg9fp3gwrs7ag5k4p3mj8h-awscli-1.40.31"
+        },
+        "x86_64-linux": {
+          "outputs": [
+            {
+              "name": "out",
+              "path": "/nix/store/slyh6v0z77vjkw9awh4j75b8fg4a2rpv-awscli-1.40.31",
+              "default": true
+            },
+            {
+              "name": "dist",
+              "path": "/nix/store/3vdg0y34zvgvdnlykdq7kvfwwc5gcmgf-awscli-1.40.31-dist"
+            }
+          ],
+          "store_path": "/nix/store/slyh6v0z77vjkw9awh4j75b8fg4a2rpv-awscli-1.40.31"
+        }
+      }
+    },
     "gitflow@1.12": {
       "last_modified": "2025-06-20T02:24:11Z",
       "resolved": "github:NixOS/nixpkgs/076e8c6678d8c54204abcb4b1b14c366835a58bb#gitflow",

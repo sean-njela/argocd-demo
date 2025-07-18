@@ -1,0 +1,32 @@
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: payments-prod  # name of the app 
+  namespace: argocd # namespace of the app
+  # no annotations for production | no Cdeployment | always CDel
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io/foreground # this will make argocd delete the resources when the app is deleted
+
+spec:
+  project: default # project to deploy to
+  source:
+    repoURL: ssh://git@github.com/sean-njela/argocd-demo.git
+    targetRevision: main # branch to deploy from (or HEAD for latest commit)
+    path: environments/prod/helm/myargoapp-chart # path to the helm chart (app0)
+  destination:
+    server: https://kubernetes.default.svc # kubernetes server
+    namespace: prod # namespace to deploy to
+    helm:
+      valueFiles:
+        - values.yaml
+  syncPolicy:
+    syncOptions:
+      - CreateNamespace=true # create namespace if it does not exist
+      - Validate=true # if the deployment has any issues, it will not be deployed
+      - PrunePropagationPolicy=Foreground # this will run the prune operation in the foreground
+      - PruneLast=true # this will ensure that the last resourc is pruned
+    automated:
+      prune: true # prune resources that are not in the repo
+      selfHeal: true # disregard any changes made to the cluster directly
+      allowEmpty: false # do not allow empty sync
