@@ -163,7 +163,9 @@ task docs # This will serve the docs locally at http://127.0.0.1:8000/argocd-dem
 Use the following command to clean up the cluster and terraform resources:
 
 ```sh
-task cleanup
+task cleanup-dev
+# or 
+task cleanup-prod
 ```
 This will delete the cluster and terraform resources.
 

@@ -1,0 +1,3 @@
+# === Helm ===
+*.tgz                     # Packaged Helm charts
+.release-name/            # Helm release metadata directory (optional)

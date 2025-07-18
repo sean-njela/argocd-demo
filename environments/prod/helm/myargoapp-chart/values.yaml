@@ -1,0 +1,13 @@
+replicaCount: 3
+
+image:
+  repository: 699475925123.dkr.ecr.eu-north-1.amazonaws.com/devopssean/zta_demo_app2
+  tag: "2.0.0"
+
+container:
+  name: payments # must also match the name of the container in the argocd application definition
+
+service:
+  type: ClusterIP
+  port: 8080
+  targetPort: 5000

@@ -17,7 +17,8 @@
     "argocd@2.14",
     "terraform@1.12",
     "poetry@2.1",
-    "kubeseal@0.30"
+    "kubeseal@0.30",
+    "awscli@1.40"
   ],
   "shell": {
     "init_hook": [
