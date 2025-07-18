@@ -4,5 +4,5 @@ helm:
     value: docker.io/devopssean/zta_demo_app
     forcestring: true
   - name: image.tag
-    value: 2.1.9
+    value: 2.2.2
     forcestring: true
