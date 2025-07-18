@@ -30,16 +30,17 @@ tasks:
 # # # # # # # ---------- # # # # # # # ---------- # # # # # # # 
 
   dev:
-    desc: "Spin up teh complete dev cluster"
+    desc: "Spin up the complete dev cluster"
     cmds:
       - task: create-cluster
       - task: tf-apply
-      - task: helm-package-push
+      - task: kubeseal
       - task: bootstrap-sealed-secret
+      - task: bootstrap-notifications-secret
+      - task: bootstrap-notifications-cm
       - task: bootstrap-app0
       - task: expose-kubeconfig
       - task: argocd-init-passwd
-      - task: port-fwd-argocd
       - echo "Done"
   
 
@@ -65,13 +66,30 @@ tasks:
       - kubens argocd
       - argocd admin initial-password
 
+# # # # # # # ---------- # # # # # # # ---------- # # # # # # # 
+# Bootsraping
+# # # # # # # ---------- # # # # # # # ---------- # # # # # # # 
+
   bootstrap-sealed-secret:
     desc: "Bootstrap sealed image updater secret"
-    deps: [kubeseal]
     cmds:
       - kubectx kind-argocd-demo
       - kubens argocd
       - kubectl apply -f 1-sealed-repo-secret.yaml
+
+  bootstrap-notifications-secret:
+    desc: "Bootstrap argocd notifications secret"
+    cmds:
+      - kubectx kind-argocd-demo
+      - kubens argocd
+      - kubectl apply -f 1-sealed-notifications-secret.yaml
+
+  bootstrap-notifications-cm:
+    desc: "Bootstrap argocd notifications configmap"
+    cmds:
+      - kubectx kind-argocd-demo
+      - kubens argocd
+      - kubectl apply -f 0-notifications-cm.yaml
 
   bootstrap-app0:
     desc: "Bootstrap argocd application using app0"
@@ -80,14 +98,16 @@ tasks:
       - kubens argocd
       - kubectl apply -f 0-application.yaml
 
+# # # # # # # ---------- # # # # # # # ---------- # # # # # # # 
+# Cleanup
+# # # # # # # ---------- # # # # # # # ---------- # # # # # # # 
+
   cleanup:
     desc: "Deletes the terraform resources and the kind cluster"
     dir: terraform
     cmds:
-      - kubectx kind-argocd-demo || echo "Kind cluster not found"
-      - terraform destroy -auto-approve || echo "Terraform resources not found"
-      - kind delete cluster -n argocd-demo || echo "Kind cluster not found"
-      - task: del-ssh-key || echo "SSH key not found"
+      - terraform destroy -auto-approve 
+      - kind delete cluster -n argocd-demo 
 
 # # # # # # # ---------- # # # # # # # ---------- # # # # # # # 
 # Helm 
@@ -198,3 +218,4 @@ tasks:
       - kubectx kind-argocd-demo
       - kubens argocd
       - kubeseal --controller-name sealed-secrets -o yaml -n kube-system < 0-repo-secret.yaml > 1-sealed-repo-secret.yaml
+      - kubeseal --controller-name sealed-secrets -o yaml -n argocd < 0-notifications-secret.yaml > 1-sealed-notifications-secret.yaml

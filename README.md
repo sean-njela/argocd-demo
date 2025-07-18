@@ -4,7 +4,7 @@
   <h1>Argo CD Personal Project</h1>
   
   <p>
-    A professional portfolio project showcasing GitOps implementation with Argo CD, Kubernetes, Sealed Secrets, and Infrastructure as Code. This project demonstrates DevOps best practices using modern tools and techniques with a security first mindset.
+    A professional portfolio project showcasing GitOps implementation with Argo CD, Kubernetes, Sealed Secrets, Notifications, and Infrastructure as Code. This project demonstrates DevOps best practices using modern tools and techniques with a security first mindset.
 
     The project uses Terraform to provision Argo CD into a Kind cluster, implements the App of Apps pattern, and leverages Helm charts for application deployment.
   </p>
@@ -135,7 +135,12 @@ This single command will:
 4. Bootstrap argocd application using 0-application.yaml (this is the application.yaml file with app of apps pattern, TF and helm).
 5. Expose cluster kubeconfig for tools like lens
 6. Add argocd helm repo
-7. Port forward argocd server UI to localhost:8080 (the password will in the same terminal, just above, just scroll up. Username is admin)
+
+Then run:
+
+```sh
+task port-fwd-argocd
+```
 
 You can now access the Argo CD UI at http://localhost:8080 with username `admin` and for the password run(in a seperate terminal):
 
@@ -144,6 +149,12 @@ task argocd-init-passwd
 ```
 
 Then in a seperate terminal window run:
+
+```sh
+task helm-package-push
+```
+
+Then run:
 
 ```sh
 task docs # This will serve the docs locally at http://127.0.0.1:8000/argocd-demo/

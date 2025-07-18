@@ -10,5 +10,7 @@ resource "helm_release" "argocd_image_updater" {
   version          = "0.8.4"
   namespace        = "argocd"
   create_namespace = true
+  timeout          = 600
+  replace          = true
   values           = [file("values/image-updater-values.yaml")]
 }

@@ -6,3 +6,16 @@ global:
 server:
   extraArgs:
     - "--insecure" 
+
+## Notifications
+
+configs:
+  params:
+    server.insecure: true # disable https endpoint. This remains even in production as we will instead use ingress secured with tls
+
+notifications:
+  enabled: true # allow deployment of notification controller which will be deployed as a seperate pod that watches argocd events
+  secret: 
+    create: false # false at first because we will create the secret manually (for now)
+  cm:
+    create: false # false at first because we will create the configmap manually (for now)
