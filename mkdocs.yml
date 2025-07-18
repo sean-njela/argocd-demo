@@ -159,5 +159,6 @@ nav:
       - Argo CD Image Updater: argocd/image-updater.md
       - Argo CD Image Updater Setup: argocd/image-updater-setup.md
       - Pulling from a helm repo: argocd/using-helm-repo.md
+      - Sealed Secrets: argocd/sealed-secrets.md
   - Automation:
       - Task Runner: automation/taskfile.md

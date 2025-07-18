@@ -216,3 +216,11 @@ source:
 Argo CD sees the Git change and syncs automatically.
 
 For images we already setup argocd-image-updater to automatically update the image tag in the values.yaml file. 
+
+To check for updates either:
+
+- Check ArgoCD UI
+- ```kubectl logs -n argocd pod/argocd-image-updater-665f95946-94v6x```
+- ```kubectl get application my-argocd-app-with-chart -o yaml | less```
+
+---
