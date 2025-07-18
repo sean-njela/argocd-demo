@@ -98,7 +98,6 @@ tasks:
       - kubens argocd
       - kubectl apply -f 0-application.yaml
 
-
 # # # # # # # ---------- # # # # # # # ---------- # # # # # # # 
 # Cleanup
 # # # # # # # ---------- # # # # # # # ---------- # # # # # # # 
