@@ -39,3 +39,27 @@ Replace docker hub in the `my-argocd-app3.yaml` file with the ECR repo.
 
 
 We do not have annotations or CD in production apps. We always have CDel.
+
+---
+
+## Deploying Docker Images
+
+You will need to provide docker with ECR credentials to be able to push to the ECR. the easiest way is to clisck the repository and click `view push commands`
+
+ 1.
+
+ ```sh
+ aws ecr get-login-password --region eu-north-1 | docker login --username AWS --password-stdin 699475925123.dkr.ecr.eu-north-1.amazonaws.com
+ ```
+
+ 2. 
+
+ ```sh
+docker tag devopssean/zta_demo_app:dev 699475925123.dkr.ecr.eu-north-1.amazonaws.com/devopssean/zta_demo_app1:1.5.0
+docker push 699475925123.dkr.ecr.eu-north-1.amazonaws.com/devopssean/zta_demo_app1:1.5.0
+ ```
+
+```sh
+docker tag devopssean/zta_demo_app:dev 699475925123.dkr.ecr.eu-north-1.amazonaws.com/devopssean/zta_demo_app2:2.5.0
+docker push 699475925123.dkr.ecr.eu-north-1.amazonaws.com/devopssean/zta_demo_app2:2.5.0
+ ```
