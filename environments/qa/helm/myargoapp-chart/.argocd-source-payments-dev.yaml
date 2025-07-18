@@ -1,0 +1,8 @@
+helm:
+  parameters:
+  - name: image.name
+    value: 699475925123.dkr.ecr.eu-north-1.amazonaws.com/devopssean/zta_demo_app2
+    forcestring: true
+  - name: image.tag
+    value: 2.5.0
+    forcestring: true
