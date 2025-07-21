@@ -1,4 +1,31 @@
 version: '3'
+
+# ─── Global Configuration ───────────────────────────────────────────────────────
+# Specify output style: options: [prefixed, unified]
+output: prefixed
+
+# Support .env files for environment variables
+dotenv:
+  - .env
+
+vars:
+  ID: '{{.ID}}'
+  REGION: '{{.REGION}}'
+  ECR: '{{.ECR}}'
+  ECR1: '{{.ECR1}}'
+  ECR2: '{{.ECR2}}'
+  CLUSTER_NAME: '{{.CLUSTER_NAME}}'
+  CLUSTER_ARN: '{{.CLUSTER_ARN}}'
+  SSH_KEY_PATH: '{{.SSH_KEY_PATH}}'
+
+
+includes:
+  # Example include of shared tasks
+  common:
+    taskfile: ./Taskfile.gitflow.yaml
+    flatten: true
+
+
 tasks:
   default:
     desc: "Default command"
@@ -32,37 +59,69 @@ tasks:
   dev:
     desc: "Spin up the complete dev cluster"
     cmds:
-      - task: create-cluster
-      - task: tf-apply
+      - task: create-cluster-dev
+      - task: tf-apply-dev
       - task: kubeseal
-      - task: bootstrap-sealed-secret
-      - task: bootstrap-notifications-secret
-      - task: bootstrap-notifications-cm
-      - task: bootstrap-app0
+      - task: bootstrap-sealed-secret-dev
+      - task: bootstrap-notifications-secret-dev
+      - task: bootstrap-notifications-cm-dev
+      - task: bootstrap-app0-dev
       - task: expose-kubeconfig
-      - task: argocd-init-passwd
+      - task: argocd-init-passwd-dev
       - echo "Done"
   
 
-  create-cluster:
+  prod:
+    desc: "Spin up the complete prod cluster"
+    cmds:
+      - task: tf-apply-prod
+      - aws eks update-kubeconfig --name {{.CLUSTER_NAME}} --region {{.REGION}}
+      - kubectx {{.CLUSTER_ARN}}
+      - kubens argocd
+      - task: bootstrap-sealed-secret-prod
+      - task: bootstrap-notifications-secret-prod
+      - task: bootstrap-notifications-cm-prod
+      - task: bootstrap-app2-prod
+      - task: bootstrap-app3-prod
+      - task: argocd-init-passwd-prod
+      - task: port-fwd-argocd-prod
+      - echo "Done"
+
+
+  create-cluster-dev:
     desc: "Create a Kind cluster if it doesn't already exist"
     cmds:
-      - kind create cluster -n argocd-demo --image kindest/node:v1.33.1 || echo "Cluster already exists"
-      - kubectx kind-argocd-demo
+      - kind create cluster -n argocd-dev --image kindest/node:v1.33.1 || echo "Cluster already exists"
+      - kubectx kind-argocd-dev
     status:
-      - kind get clusters | grep argocd-demo
+      - kind get clusters | grep argocd-dev
+
+  create-cluster-prod:
+    desc: "Create a Kind cluster if it doesn't already exist"
+    cmds:
+      - kind create cluster -n argocd-prod --image kindest/node:v1.33.1 || echo "Cluster already exists"
+      - kubectx {{.CLUSTER_ARN}}
+    status:
+      - kind get clusters | grep argocd-prod
 
   expose-kubeconfig:
     desc: "Expose cluster kubeconfig"
     cmds:
-      - kubectx kind-argocd-demo
+      - kubectx kind-argocd-dev
       - cat ~/.kube/config > config-kind-dev.txt
       - echo "Copy config-kind-dev.txt into lens to view your cluster"
 
-  argocd-init-passwd:
+  argocd-init-passwd-dev:
     desc: "This is a command to initialize argocd password. Use admin as username"
     cmds:
-      - kubectx kind-argocd-demo
+      - kubectx kind-argocd-dev
+      - kubens argocd
+      - argocd admin initial-password
+
+  argocd-init-passwd-prod:
+    desc: "This is a command to initialize argocd password. Use admin as username"
+    cmds:
+      - kubectx {{.CLUSTER_ARN}}
       - kubens argocd
       - argocd admin initial-password
 
@@ -70,33 +129,68 @@ tasks:
 # Bootsraping
 # # # # # # # ---------- # # # # # # # ---------- # # # # # # # 
 
-  bootstrap-sealed-secret:
+  bootstrap-sealed-secret-dev:
     desc: "Bootstrap sealed image updater secret"
     cmds:
-      - kubectx kind-argocd-demo
+      - kubectx kind-argocd-dev
       - kubens argocd
       - kubectl apply -f argocd/1-sealed-repo-secret.yaml
 
-  bootstrap-notifications-secret:
+  bootstrap-sealed-secret-prod:
+    desc: "Bootstrap sealed image updater secret"
+    cmds:
+      - kubectx {{.CLUSTER_ARN}}
+      - kubens argocd
+      - kubectl apply -f argocd/0-repo-secret.yaml
+
+  bootstrap-notifications-secret-dev:
     desc: "Bootstrap argocd notifications secret"
     cmds:
-      - kubectx kind-argocd-demo
+      - kubectx kind-argocd-dev
       - kubens argocd 
       - kubectl apply -f argocd/1-sealed-notifications-secret.yaml
 
-  bootstrap-notifications-cm:
+  bootstrap-notifications-secret-prod:
+    desc: "Bootstrap argocd notifications secret"
+    cmds:
+      - kubectx {{.CLUSTER_ARN}}
+      - kubens argocd 
+      - kubectl apply -f argocd/0-notifications-secret.yaml
+
+  bootstrap-notifications-cm-dev:
     desc: "Bootstrap argocd notifications configmap"
     cmds:
-      - kubectx kind-argocd-demo
+      - kubectx kind-argocd-dev
       - kubens argocd
       - kubectl apply -f argocd/0-notifications-cm.yaml
 
-  bootstrap-app0:
+  bootstrap-notifications-cm-prod:
+    desc: "Bootstrap argocd notifications configmap"
+    cmds:
+      - kubectx {{.CLUSTER_ARN}}
+      - kubens argocd
+      - kubectl apply -f argocd/0-notifications-cm.yaml
+
+  bootstrap-app0-dev:
     desc: "Bootstrap argocd application using app0"
     cmds:
-      - kubectx kind-argocd-demo
+      - kubectx kind-argocd-dev
       - kubens argocd
       - kubectl apply -f argocd/0-application.yaml
+
+  bootstrap-app2-prod:
+    desc: "Bootstrap argocd application using app2"
+    cmds:
+      - kubectx {{.CLUSTER_ARN}}
+      - kubens argocd
+      - kubectl apply -f argocd/2-application.yaml
+
+  bootstrap-app3-prod:
+    desc: "Bootstrap argocd application using app3"
+    cmds:
+      - kubectx {{.CLUSTER_ARN}}
+      - kubens argocd
+      - kubectl apply -f argocd/3-application.yaml
 
 # # # # # # # ---------- # # # # # # # ---------- # # # # # # # 
 # Cleanup
@@ -107,7 +201,7 @@ tasks:
     dir: terraform/environments/dev
     cmds:
       - terraform destroy -auto-approve 
-      - kind delete cluster -n argocd-demo 
+      - kind delete cluster -n argocd-dev 
 
   cleanup-prod:
     desc: "Deletes the terraform resources and the prod kind cluster"
@@ -122,7 +216,7 @@ tasks:
   helm-add-all:
     desc: "Add all helm repos"
     cmds:
-      - kubectx kind-argocd-demo
+      - kubectx kind-argocd-dev
       - helm repo add argocd https://argoproj.github.io/argo-helm
       - helm repo add chartmuseum https://chartmuseum.github.io/charts
       - helm repo add argocd-image-updater https://argocd-image-updater.github.io/argocd-image-updater
@@ -138,7 +232,7 @@ tasks:
   helm-dry-run:
     desc: "Dry run helm chart to check if it will install successfully"
     cmds:
-      - kubectx kind-argocd-demo
+      - kubectx kind-argocd-dev
       - kubens argocd
       - helm install myargoapp-chart environments/dev/helm/myargoapp-chart --values environments/dev/helm/myargoapp-chart/values.yaml --dry-run --debug
 
@@ -169,19 +263,19 @@ tasks:
   ssh-keygen:
     desc: "Generate ssh key for argocd-image-updater"
     cmds:
-      - ssh-keygen -t ed25519 -C "argocd@image-updater" -f ~/.ssh/argocd_image_updater_ed25519
+      - ssh-keygen -t ed25519 -C "argocd@image-updater" -f {{.SSH_KEY_PATH}}
 
   del-ssh-key:
     desc: "Delete ssh key for argocd-image-updater"
     cmds:
-      - rm ~/.ssh/argocd_image_updater_ed25519
-      - rm ~/.ssh/argocd_image_updater_ed25519.pub
+      - rm {{.SSH_KEY_PATH}}
+      - rm {{.SSH_KEY_PATH}}.pub
 
 # # # # # # # ---------- # # # # # # # ---------- # # # # # # # 
 # Docker 
 # # # # # # # ---------- # # # # # # # ---------- # # # # # # # 
 
-  docker-push:
+  docker-push-dev:
     desc: "Tag and push docker image -> task docker-tag-push version=\"1.2.0\""
     requires:
       vars:
@@ -192,20 +286,48 @@ tasks:
       - docker push devopssean/zta_demo_app:{{.version}}
 
 
+  ecr-push-prod1:
+    desc: "Tag and push docker image to ECR1"
+    requires:
+      vars:
+        - version
+    cmds:
+      - aws ecr get-login-password --region eu-north-1 | docker login --username AWS --password-stdin {{.ECR}}
+      - docker tag devopssean/zta_demo_app:dev {{.ECR1}}:{{.version}}
+      - docker push {{.ECR1}}:{{.version}}
+
+
+  ecr-push-prod2:
+    desc: "Tag and push docker image to ECR2"
+    requires:
+      vars:
+        - version
+    cmds:
+      - aws ecr get-login-password --region eu-north-1 | docker login --username AWS --password-stdin {{.ECR2}}
+      - docker tag devopssean/zta_demo_app:dev {{.ECR2}}:{{.version}}
+      - docker push {{.ECR2}}:{{.version}}
+
+
 # # # # # # # ---------- # # # # # # # ---------- # # # # # # # 
 # Port Forward 
 # # # # # # # ---------- # # # # # # # ---------- # # # # # # # 
 
-  port-fwd-argocd:
+  port-fwd-argocd-dev:
     desc: "Forward the Argo CD server UI to localhost:8080"
     cmds:
-      - kubectx kind-argocd-demo
+      - kubectx kind-argocd-dev
+      - kubectl port-forward svc/argocd-server -n argocd 8080:443
+
+  port-fwd-argocd-prod:
+    desc: "Forward the Argo CD server UI to localhost:8080"
+    cmds:
+      - kubectx {{.CLUSTER_ARN}}
       - kubectl port-forward svc/argocd-server -n argocd 8080:443
 
   port-fwd-chartmuseum:
     desc: "Forward the Chartmuseum server UI to localhost:8083"
     cmds:
-      - kubectx kind-argocd-demo
+      - kubectx kind-argocd-dev
       - kubens chartmuseum
       - kubectl port-forward svc/chartmuseum 8083:8080
 
@@ -217,7 +339,7 @@ tasks:
   kubeseal:
     desc: "Encrypt a secret using kubeseal"
     cmds:
-      - kubectx kind-argocd-demo
+      - kubectx kind-argocd-dev
       - kubens argocd
       - kubeseal --controller-name sealed-secrets -o yaml -n kube-system < argocd/0-repo-secret.yaml > argocd/1-sealed-repo-secret.yaml
       - kubeseal --controller-name sealed-secrets -o yaml -n argocd < argocd/0-notifications-secret.yaml > argocd/1-sealed-notifications-secret.yaml
