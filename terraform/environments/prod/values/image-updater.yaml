@@ -12,8 +12,8 @@ authScripts:
 config:
   registries:
   - name: ECR
-    api_url: https://699475925123.dkr.ecr.eu-north-1.amazonaws.com # replace
-    prefix: 699475925123.dkr.ecr.eu-north-1.amazonaws.com # replace
+    api_url: https://{{.ECR}} # replace
+    prefix: {{.ECR}} # replace
     ping: yes
     insecure: no
     credentials: ext:/scripts/auth.sh

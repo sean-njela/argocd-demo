@@ -5,19 +5,38 @@ We will use a python script to freeze the environment until we are ready to depl
 How the script works:
 
  1. When ready to deploy, `pause` will create a new branch and add ignore annotations to all apps in the environment. Then create a pull request.
- 2. Merging this pull request will freeze teh environment.
+ 2. Merging this pull request will freeze the environment.
  3. Then run the script again by stating a source environment and a destination environment to prepare production push. This creates a pullrequest for the production push. 
  4. Merging this pull request will push to production 
  5. Then we run the script to create a pull request to unfreeze the environment.
 
 We seperated the development(kind) terraform config files from the production(EKS) terraform config files. This is to prevent any accidental changes to the production environment.
 
-Create EC repositories in the AWS console.
+Create ECRepositories in the AWS console.
 Replace the `api_url` and `prefix` with those of the ECR repo in the image-updater.yaml file in the values folder of the prod environment. 
 
 ---
 
-the first step after provisioning is to give your local kubernetes config access to teh EKS cluster.:
+Replace docker hub in the `my-argocd-app3.yaml` file with the ECR repo. 
+
+
+We do not have annotations or CD in production apps. We always have CDel.
+
+To create the production EKS cluster and deploy Argo CD, simply run:
+
+```sh
+task ssh-keygen 
+```
+Then copy the private key to the `0-repo-secret.yaml` file for argocd-image-updater. Then copy the public key to the deploy key section in the github repo. Also make sure to add the slack token to the `0-notifications-secret.yaml` file. Then run the next command. 
+
+
+First run:
+
+```sh 
+task prod
+```
+
+This next command is auto automatically run by `task prod` but it is good to know what it does. It is the first step after provisioning the cluster. It gives your local kubernetes config access to the EKS cluster.
 
 ```sh
 aws eks update-kubeconfig --name prod-demo --region eu-north-1
@@ -35,39 +54,28 @@ If you get any errors restart the pod, and if persistant, double check your conf
 
 ---
 
-Replace docker hub in the `my-argocd-app3.yaml` file with the ECR repo. 
-
-
-We do not have annotations or CD in production apps. We always have CDel.
-
----
-
 ## Deploying Docker Images
 
-You will need to provide docker with ECR credentials to be able to push to the ECR. the easiest way is to clisck the repository and click `view push commands`
+You will need to provide docker with ECR credentials to be able to push to the ECR. the easiest way is to click the repository and click `view push commands`
 
- 1.
-
- ```sh
- aws ecr get-login-password --region eu-north-1 | docker login --username AWS --password-stdin 699475925123.dkr.ecr.eu-north-1.amazonaws.com
- ```
-
- 2. 
-
- ```sh
-docker tag devopssean/zta_demo_app:dev 699475925123.dkr.ecr.eu-north-1.amazonaws.com/devopssean/zta_demo_app1:1.5.0
-docker push 699475925123.dkr.ecr.eu-north-1.amazonaws.com/devopssean/zta_demo_app1:1.5.0
- ```
 
 ```sh
-docker tag devopssean/zta_demo_app:dev 699475925123.dkr.ecr.eu-north-1.amazonaws.com/devopssean/zta_demo_app2:2.5.0
-docker push 699475925123.dkr.ecr.eu-north-1.amazonaws.com/devopssean/zta_demo_app2:2.5.0
- ```
+aws ecr get-login-password --region eu-north-1 | docker login --username AWS --password-stdin {{.ECR}}
+```
 
+```sh
+docker tag devopssean/zta_demo_app:dev {{.ECR}}/devopssean/zta_demo_app1:1.5.0
+docker push {{.ECR}}/devopssean/zta_demo_app1:1.5.0
+```
 
- ## Applying apps
+```sh
+docker tag devopssean/zta_demo_app:dev {{.ECR}}/devopssean/zta_demo_app2:2.5.0
+docker push {{.ECR}}/devopssean/zta_demo_app2:2.5.0
+```
 
- There are two apps to apply qa `argocd/2-application.yaml` and prod `argocd/3-application.yaml`. After updating an image the `3-application.yaml` will not auto update as there is no annotation for that. So we test the qa first then if satisfied we push to prod.
+## Applying apps
 
+There are two apps to apply qa `argocd/2-application.yaml` and prod `argocd/3-application.yaml`. After updating an image the `3-application.yaml` will not auto update as there is no annotation for that. So we test the qa first then if satisfied we push to prod.
 
- ## Freezing script
+## Freezing script
+

@@ -5,13 +5,13 @@ vars:
   DEV_BRANCH: develop
 
 tasks:
-  default:
-    desc: "📋 List all tasks"
-    cmds:
-      - task --list-all
+  # default:
+  #   desc: "📋 List all tasks"
+  #   cmds:
+  #     - task --list-all
 
   commit:
-    desc: "Add and commit changes -> task commit msg=\"your commit message\""
+    desc: "📝 Add and commit changes -> task commit msg=\"your commit message\""
     cmds:
       - |
         git status
@@ -27,8 +27,8 @@ tasks:
     preconditions:
       - sh: "[ -d .git ]"
         msg: "❌ Not a Git repository. Run 'git init' first."
-      - sh: "! git config --get gitflow.branch.master >/dev/null 2>&1"
-        msg: "✅ Git Flow is already configured."
+      # - sh: "! git config --get gitflow.branch.master >/dev/null 2>&1"
+      #   msg: "✅ Git Flow is already configured."
     cmds:
       - |
         echo "🚀 Initializing Git Flow..."
@@ -55,11 +55,26 @@ tasks:
         git push -u origin {{.MAIN_BRANCH}} || true
         git push -u origin {{.DEV_BRANCH}} || true
 
+        # Create gh-pages branch if it doesn't exist
+        if ! git show-ref --quiet refs/remotes/origin/gh-pages; then
+          echo "🌐 Creating gh-pages branch..."
+          git checkout --orphan gh-pages
+          git reset --hard
+          echo "# GitHub Pages" > README.md
+          git add README.md
+          git commit -m "🧾 Initial commit for GitHub Pages branch"
+          git push -u origin gh-pages
+          git checkout {{.DEV_BRANCH}}  # Go back to working branch
+          echo "✅ gh-pages branch initialized and pushed."
+        else
+          echo "✅ gh-pages branch already exists remotely."
+        fi
+
         echo "✅ Git Flow setup completed."
 
 
   sync:
-    desc: "🔄 Sync current branch with latest 'develop' and handle ArgoCD updates"
+    desc: "🔄 Sync current branch with latest 'develop' and handle main updates"
     cmds:
       - |
         echo "🔁 Syncing..."
@@ -84,14 +99,14 @@ tasks:
         
         git fetch origin
         
-        # Handle develop branch with potential ArgoCD updates
+        # Handle develop branch with potential main updates
         echo "🔄 Checking develop branch..."
         git checkout {{.DEV_BRANCH}}
         
         # Check for ArgoCD-specific files in remote changes
         ARGOCD_FILES=$(git diff --name-only {{.DEV_BRANCH}} origin/{{.DEV_BRANCH}} | grep -E '\.argocd-source-.*\.yaml$' || echo "")
         if [ -n "$ARGOCD_FILES" ]; then
-          echo "📌 Detected ArgoCD-generated files in remote changes:"
+          echo "📌 Detected ArgoCD-generated files in remote changes:" 
           echo "$ARGOCD_FILES"
         fi
         
@@ -100,7 +115,7 @@ tasks:
           git pull origin {{.DEV_BRANCH}}
         else
           # Branches have diverged - try to merge remote changes
-          echo "⚠️ Develop has diverged from remote. Attempting to merge ArgoCD updates..."
+          echo "⚠️ Develop has diverged from remote. Attempting to merge updates..."
           
           # Try to auto-resolve ArgoCD file conflicts by taking remote version
           if [ -n "$ARGOCD_FILES" ]; then
@@ -115,11 +130,11 @@ tasks:
             echo "❌ Auto-merge failed. Resolve conflicts manually:"
             echo "   1. Fix conflicts"
             echo "   2. git add ."
-            echo "   3. git commit -m 'Merge ArgoCD updates'"
+            echo "   3. git commit -m 'Merge main updates'"
             echo "   4. Run 'task sync' again"
             exit 1
           }
-          echo "✅ Successfully merged ArgoCD updates into develop"
+          echo "✅ Successfully merged main updates into develop"
         fi
         
         # Return to original branch and merge develop
@@ -149,7 +164,7 @@ tasks:
           git pull origin {{.MAIN_BRANCH}}
         else
           # Branches have diverged - try to merge remote changes
-          echo "⚠️ Main has diverged from remote. Attempting to merge ArgoCD updates..."
+          echo "⚠️ Main has diverged from remote. Attempting to merge main updates..."
           
           # Try to auto-resolve ArgoCD file conflicts by taking remote version
           if [ -n "$ARGOCD_FILES" ]; then
@@ -164,11 +179,11 @@ tasks:
             echo "❌ Auto-merge failed. Resolve conflicts manually:"
             echo "   1. Fix conflicts"
             echo "   2. git add ."
-            echo "   3. git commit -m 'Merge ArgoCD updates'"
+            echo "   3. git commit -m 'Merge main updates'"
             echo "   4. Run 'task sync' again"
             exit 1
           }
-          echo "✅ Successfully merged ArgoCD updates into main"
+          echo "✅ Successfully merged main updates into main"
         fi
         
         # Return to original branch
@@ -183,7 +198,7 @@ tasks:
           }
         fi
         
-        echo "✅ Synced with develop and main, handling any ArgoCD updates"
+        echo "✅ Synced with develop and main, handling any main updates"
 
   feature:start:
     desc: "🚀 Start a new feature from 'develop' -> task feature:start name=login-form"
@@ -247,7 +262,7 @@ tasks:
             echo "❌ Auto-merge failed. Please resolve conflicts manually:"
             echo "   1. Fix conflicts"
             echo "   2. git add ."
-            echo "   3. git commit -m 'Merge ArgoCD updates before release'"
+            echo "   3. git commit -m 'Merge main updates before release'"
             echo "   4. Run 'task release:verify version=$version' again"
             exit 1
           }
@@ -265,7 +280,7 @@ tasks:
             echo "❌ Auto-merge failed. Please resolve conflicts manually:"
             echo "   1. Fix conflicts"
             echo "   2. git add ."
-            echo "   3. git commit -m 'Merge ArgoCD updates before release'"
+            echo "   3. git commit -m 'Merge main updates before release'"
             echo "   4. Run 'task release:verify version=$version' again"
             exit 1
           }
@@ -494,7 +509,7 @@ tasks:
         
         # Update documentation
         echo "📚 Updating documentation..."
-        poetry run mike deploy --update-aliases "$version" latest || echo "⚠️ Documentation update failed, but release was successful."
+        poetry run mike deploy --push --update-aliases "$version" latest || echo "⚠️ Documentation update failed, but release was successful."
         git push origin gh-pages || echo "⚠️ Failed to push documentation, but release was successful."
         poetry run mike set-default latest --push || echo "⚠️ Failed to set default documentation version, but release was successful."
         
@@ -584,4 +599,8 @@ tasks:
           git branch -d $b || echo "⚠️ Could not delete $b (maybe not merged?)"
         done
 
-
+  rm-cached:
+    desc: "🧹 Remove cached files"
+    cmds:
+      - |
+        git rm --cached -r .

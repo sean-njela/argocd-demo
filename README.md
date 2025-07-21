@@ -98,9 +98,9 @@ This project uses [Devbox](https://www.jetify.com/devbox/) to manage the develop
 
 3. **Start the Devbox Environment and poetry environment**
    ```bash
-   devbox shell # Start the devbox environment
+   devbox shell # Start the devbox environment (this will also activate the poetry environment)
    poetry install # Install dependencies
-   poetry env activate # use the output to activate the poetry environment
+   poetry env activate # use the output to activate the poetry environment (ONLY IF DEVBOX DIDNT ACTIVATE IT)
    mkdocs serve # Start the mkdocs server http://127.0.0.1:8000/argocd-demo/
    ```
 > Note - The first time you run `devbox shell`, it will take a few minutes to install the necessary tools. But after that it will be much faster.
@@ -109,10 +109,11 @@ This project uses [Devbox](https://www.jetify.com/devbox/) to manage the develop
 
 This project is designed for a simple, one-command setup. All necessary actions are orchestrated through `Taskfile.yml`.
 
-There are 2 application.yaml files:
+There are 3 application.yaml files:
 
-1. `0-application.yaml` - This is the application.yaml file with app of apps pattern, TF, sealed secrets and helm.
-2. `1-application.yaml` - This is the application.yaml file *WITHOUT* app of apps pattern, TF, sealed secrets and helm.
+1. `0-application.yaml` - This is the *dev* application.yaml file with app of apps pattern, TF, sealed secrets and helm.
+2. `2-application.yaml` - This is the *prod* application.yaml file with app of apps pattern, TF, sealed secrets and helm.
+3. `3-application.yaml` - This is another *prod* application.yaml file with app of apps pattern, TF, sealed secrets and helm.
 
 
 #### 🚀 Quick Start
@@ -136,6 +137,16 @@ This single command will:
 5. Expose cluster kubeconfig for tools like lens
 6. Add argocd helm repo
 
+or 
+
+```sh
+task prod
+```
+
+This single command will:
+1. Create an EKS cluster (if it's not already running).
+2. Deploy Argo CD using the Terraform configuration.
+
 Then run:
 
 ```sh
@@ -145,13 +156,14 @@ task port-fwd-argocd
 You can now access the Argo CD UI at http://localhost:8080 with username `admin` and for the password run(in a seperate terminal):
 
 ```sh
-task argocd-init-passwd
+task argocd-init-passwd-dev # This will print the password to the terminal for dev
+task argocd-init-passwd-prod # This will print the password to the terminal for prod
 ```
 
 Then in a seperate terminal window run:
 
 ```sh
-task helm-package-push
+task helm-package-push # This will package the helm chart and push it to the local chartmuseum helm repo
 ```
 
 Then run:
