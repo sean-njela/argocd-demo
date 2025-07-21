@@ -4,5 +4,5 @@ helm:
     value: 699475925123.dkr.ecr.eu-north-1.amazonaws.com/devopssean/zta_demo_app2
     forcestring: true
   - name: image.tag
-    value: 2.6.0
+    value: 2.7.0
     forcestring: true
