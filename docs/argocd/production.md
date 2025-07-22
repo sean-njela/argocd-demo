@@ -89,6 +89,8 @@ We will also make use of codeowners to protect the freeze being bypassed. So in 
 
 Then we open a PR to change the targetRevision from main to a specific tag and also update the `values.yaml` file of the prod environment. This will trigger a new build and push to production. Then we open a PR to unfreeze the environment. 
 
+The qa and dev argo cd apps will get ignore annotations added to them. This will prevent any updates to the apps until the freeze is unfrozen. 
+
 ```yaml
 # ArgoCD Application with frozen Git tag
 source:
