@@ -1,0 +1,4 @@
+# freeze.yaml
+status: frozen           # "frozen" or "unfrozen"
+reason: "Pre-release lockdown"
+until: "2025-07-22T23:12:00Z"

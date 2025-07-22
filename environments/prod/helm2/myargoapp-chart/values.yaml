@@ -1,8 +1,8 @@
 replicaCount: 3
 
 image:
-  repository: 699475925123.dkr.ecr.eu-north-1.amazonaws.com/devopssean/zta_demo_app1
-  tag: "1.5.0"
+  repository: {{.ECR1}}
+  tag: "1.7.0"
 
 container:
   name: users # must also match the name of the container in the argocd application definition
