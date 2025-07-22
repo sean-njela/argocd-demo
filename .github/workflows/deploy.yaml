@@ -1,0 +1,49 @@
+name: Safe Deploy with Freeze Check
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  check-freeze:
+    runs-on: ubuntu-latest
+    outputs:
+      frozen: ${{ steps.check.outputs.frozen }}
+      reason: ${{ steps.check.outputs.reason }}
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v3
+
+    - name: Parse freeze.yaml
+      id: check
+      run: |
+        STATUS=$(yq e '.status' freeze.yaml)
+        UNTIL=$(yq e '.until' freeze.yaml)
+        NOW=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
+        if [[ "$STATUS" == "frozen" && "$NOW" < "$UNTIL" ]]; then
+          echo "frozen=true" >> $GITHUB_OUTPUT
+        else
+          echo "frozen=false" >> $GITHUB_OUTPUT
+        fi
+
+  deploy: #only job that checks freeze.yaml all others can run 
+    needs: check-freeze
+    if: needs.check-freeze.outputs.frozen == 'false'
+    runs-on: ubuntu-latest
+    steps:
+    - name: 🚀 Deploy App
+      run: echo "Deploying app..."
+    - name: Notify Slack
+      if: needs.check-freeze.outputs.frozen == 'true'
+      uses: slackapi/slack-github-action@v1.24.0
+      with:
+        payload: |
+          {
+            "text": ":lock: CI/CD is frozen. Reason: *${{ steps.check.outputs.reason }}*"
+          }
+      env:
+        SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
+    
+
+
+  

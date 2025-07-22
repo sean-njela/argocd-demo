@@ -12,7 +12,7 @@ spec:
   project: default # project to deploy to
   source:
     repoURL: ssh://git@github.com/sean-njela/argocd-demo.git
-    targetRevision: main # branch to deploy from (or HEAD for latest commit)
+    targetRevision: 3.4.0 # branch to deploy from (or HEAD for latest commit)
     path: environments/prod/helm/myargoapp-chart # path to the helm chart (app0)
   destination:
     server: https://kubernetes.default.svc # kubernetes server

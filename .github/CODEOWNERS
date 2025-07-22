@@ -1,0 +1,11 @@
+# Require your approval for freeze toggle changes
+/freeze.yaml @sean-njela
+
+# Require your approval for CI/CD workflows
+/.github/workflows/ @sean-njela
+
+# Require approval for ArgoCD manifests
+/argocd/ @sean-njela
+
+# Own everything in the repo
+* @sean-njela
