@@ -204,8 +204,9 @@ The `environments/dev/helm` directory contains Helm charts for the same applicat
 * [x] App of apps pattern
 * [x] Comprehensive documentation
 * [x] ArgoCD Image Updater
-* [ ] Deployment freezing
 * [x] Notification system
+* [ ] Deployment freezing
+* [ ] Add Kargo
 
 ## NOTES
 - The `1-application.yaml` file is the same as the `0-application.yaml` it is the file we used initially before we added the app of apps pattern, tf and helm
